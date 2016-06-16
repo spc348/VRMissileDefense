@@ -81,14 +81,16 @@ public class Enemy : MonoBehaviour
 
 	public void MoveTowardTarget ()
 	{
-		transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.LookRotation (_target.transform.position - transform.position), _rotationSpeed * Time.fixedDeltaTime);
-		RaycastHit hit;
-		float offsetAlign = 0f;
-		if (Physics.Raycast (transform.position, Vector3.down, out hit)) {
-			//			transform.position = new Vector3(transform.position.x, transform.position.y + hit.point.y + offsetAlign, transform.position.z);
+		if (_target != null) {
+			transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.LookRotation (_target.transform.position - transform.position), _rotationSpeed * Time.fixedDeltaTime);
+			RaycastHit hit;
+			float offsetAlign = 0f;
+			if (Physics.Raycast (transform.position, Vector3.down, out hit)) {
+				//			transform.position = new Vector3(transform.position.x, transform.position.y + hit.point.y + offsetAlign, transform.position.z);
+			}
+			transform.position += transform.forward * moveSpeed * Time.deltaTime;
+//			Debug.DrawLine (transform.position, hit.point, Color.cyan);
 		}
-		transform.position += transform.forward * moveSpeed * Time.deltaTime;
-		Debug.DrawLine (transform.position, hit.point, Color.cyan);
 	}
 
 

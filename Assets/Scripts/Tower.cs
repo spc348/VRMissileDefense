@@ -6,6 +6,7 @@ public class Tower : MonoBehaviour
 {
 	[SerializeField] private ObjectPoolerScript _objectPoolerScript;
 
+	[SerializeField] private GameObject _deathParticlesPrefab;
 	[SerializeField] private GameObject _towerBlockPrefab;
 	[SerializeField] private GameObject _startingBlock;
 
@@ -33,59 +34,70 @@ public class Tower : MonoBehaviour
 	public void takeHealth (int amount)
 	{
 		_health -= amount;
-		updateHealthBar();
+
+		if (_health <= 0) {
+			die ();
+		}
+		updateHealthBar ();
 	}
 
-	void updateHealthBar() {
+	void updateHealthBar ()
+	{
 		_healthSlider.value = _health;
 	}
 
 	void OnCollisionEnter (Collision coll)
 	{
 		if (coll.gameObject.CompareTag ("Enemy")) {
-			takeHealth(1);
+			takeHealth (1);
 		}
 
 	}
 
+	void die ()
+	{
+		Instantiate (_deathParticlesPrefab, transform.position, Quaternion.identity);
+		Destroy (gameObject);
+	}
 
-//	IEnumerator makeTower ()
-//	{
-//		float xIncrease = 0;
-//		float yIncrease = 0;
-//		float zIncrease = 0;
-//		Vector3 addedDistance = new Vector3 (1, yIncrease, zIncrease);
-//		for (int i = 0; i < 1000; i++) {
-//		
-//			xIncrease++;
-//
-//
-//			if ((xIncrease * zIncrease) >= (towerWidth * towerWidth)) {
-//				xIncrease = 0;
-//				yIncrease++;
-//				zIncrease = 0;
-//			}
-//
-//			if ((xIncrease >= towerWidth)) {
-//				xIncrease = 0;
-//				zIncrease++;
-//			}
-//			addedDistance = new Vector3 (xIncrease, yIncrease, zIncrease);
-//			//Lay down four blocks
-//			//increse Z by 1
-//			//lawy down four blocks
-//			//increase z by 1;
-//			//if greater than 4
-//
-//			GameObject towerBlock = _objectPoolerScript.GetPooledObject ();
-//			towerBlock.transform.position = _startingBlock.transform.position + addedDistance;
-//			towerBlock.SetActive (true);
-//
-//			yield return null;
-//		}
-////		towerBlock.transform.position = 
-//		yield return null;
-//	}
+
+	//	IEnumerator makeTower ()
+	//	{
+	//		float xIncrease = 0;
+	//		float yIncrease = 0;
+	//		float zIncrease = 0;
+	//		Vector3 addedDistance = new Vector3 (1, yIncrease, zIncrease);
+	//		for (int i = 0; i < 1000; i++) {
+	//
+	//			xIncrease++;
+	//
+	//
+	//			if ((xIncrease * zIncrease) >= (towerWidth * towerWidth)) {
+	//				xIncrease = 0;
+	//				yIncrease++;
+	//				zIncrease = 0;
+	//			}
+	//
+	//			if ((xIncrease >= towerWidth)) {
+	//				xIncrease = 0;
+	//				zIncrease++;
+	//			}
+	//			addedDistance = new Vector3 (xIncrease, yIncrease, zIncrease);
+	//			//Lay down four blocks
+	//			//increse Z by 1
+	//			//lawy down four blocks
+	//			//increase z by 1;
+	//			//if greater than 4
+	//
+	//			GameObject towerBlock = _objectPoolerScript.GetPooledObject ();
+	//			towerBlock.transform.position = _startingBlock.transform.position + addedDistance;
+	//			towerBlock.SetActive (true);
+	//
+	//			yield return null;
+	//		}
+	////		towerBlock.transform.position =
+	//		yield return null;
+	//	}
 
 
 }

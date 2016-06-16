@@ -107,6 +107,6 @@ public class Enemy : MonoBehaviour
 
 	void OnCollisionEnter (Collision coll)
 	{
-//		print (coll.gameObject.name);
+		
 	}
 }

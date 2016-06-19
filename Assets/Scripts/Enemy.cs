@@ -20,8 +20,8 @@ public class Enemy : MonoBehaviour
 		}
 	}
 
-	[SerializeField] private GameObject _target;
-	[SerializeField] private bool _targetSet = false;
+	[SerializeField] protected GameObject _target;
+	private bool _targetSet = false;
 	[SerializeField] private Renderer _renderer;
 	[SerializeField] private ParticleSystem deathExplosion;
 	[SerializeField] private Slider _healthSlider;

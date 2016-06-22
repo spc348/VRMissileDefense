@@ -4,8 +4,7 @@ using System.Collections.Generic;
 
 public class EnemyManager : MonoBehaviour {
 	[SerializeField] private ObjectPoolerScript _objectPooler;
-
-	[SerializeField] private GameObject _enemyPrefab;
+	[SerializeField] private GameObject _worldSpaceCanvas;
 	public int numEnemies = 100;
 
 	public GameObject[] targets;
@@ -27,9 +26,10 @@ public class EnemyManager : MonoBehaviour {
 
 		for (int i = 0; i < numEnemies; i++) {
 			Vector3 spawnPos = new Vector3 (Random.Range(-50f, 50f), Random.Range(30f, 100f), Random.Range(-50f, 50f));
-//			GameObject enemyGO = Instantiate(_enemyPrefab, spawnPos, Quaternion.identity) as GameObject;
 			GameObject enemyGO = _objectPooler.GetPooledObject();
 			enemyGO.name = enemyGO.name + i.ToString();
+			enemyGO.transform.position = transform.position;
+			enemyGO.transform.SetParent(_worldSpaceCanvas.transform);
 			Enemy enemy = enemyGO.GetComponent<Enemy>();
 			enemy.Target = targets[Random.Range(0,targets.Length-1)];
 			enemyGO.SetActive(true);

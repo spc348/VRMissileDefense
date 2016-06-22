@@ -9,9 +9,11 @@ public class Tower : MonoBehaviour
 	[SerializeField] private GameObject _deathParticlesPrefab;
 	[SerializeField] private GameObject _towerBlockPrefab;
 	[SerializeField] private GameObject _startingBlock;
+	[SerializeField] private Renderer _renderer;
 
 	[SerializeField] private Slider _healthSlider;
 
+	[SerializeField] private Color _origColor;
 	[SerializeField] private int _health = 100;
 
 
@@ -21,18 +23,17 @@ public class Tower : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+
+		_origColor = _renderer.material.color;
 //		towerBlockSize = _towerBlockPrefab.GetComponent<Renderer> ().bounds.size;
 //		StartCoroutine(makeTower());
 	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
 
-	}
 
-	public void takeHealth (int amount)
+	public void takeDamage (int amount)
 	{
+		StartCoroutine (showDamageColor ());
+
 		_health -= amount;
 
 		if (_health <= 0) {
@@ -46,12 +47,11 @@ public class Tower : MonoBehaviour
 		_healthSlider.value = _health;
 	}
 
-	void OnCollisionEnter (Collision coll)
+	IEnumerator showDamageColor ()
 	{
-		if (coll.gameObject.CompareTag ("Enemy")) {
-			takeHealth (1);
-		}
-
+		_renderer.material.color = Color.red;
+		yield return new WaitForSeconds (.1f);
+		_renderer.material.color = _origColor;
 	}
 
 	void die ()
@@ -60,6 +60,12 @@ public class Tower : MonoBehaviour
 		Destroy (gameObject);
 	}
 
+	void OnCollisionEnter (Collision coll)
+	{
+		if (coll.gameObject.CompareTag ("Enemy")) {
+		}
+		
+	}
 
 	//	IEnumerator makeTower ()
 	//	{

@@ -9,7 +9,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private AudioClip deathBoomClip;
 	[SerializeField] private Collider _collider;
 
-//	public EnemyManager EManager() { GetType {}} 
+	//	public EnemyManager EManager() { GetType {}}
 	[SerializeField] private EnemyManager _enemyManager;
 
 	public GameObject Target {
@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private ParticleSystem deathExplosion;
 	[SerializeField] private Slider _healthSlider;
 
+	private Color _origColor;
 	[SerializeField] private float _rotationSpeed = 10f;
 	[SerializeField] public float moveSpeed = 4f;
 
@@ -34,14 +35,11 @@ public class Enemy : MonoBehaviour
 	public float stunnedCountdown = 5f;
 	private int health = 10;
 
-
-
-
 	// Use this for initialization
 	void Start ()
 	{
-//		_target = GameObject.Find ("Player");	
-//		updateHealthBar();
+		_origColor = _renderer.material.color;
+		updateHealthBar();
 	}
 
 	// Update is called once per frame
@@ -64,7 +62,7 @@ public class Enemy : MonoBehaviour
 
 	public void Die ()
 	{
-		StartCoroutine(delayedDie());
+		StartCoroutine (delayedDie ());
 	}
 
 	IEnumerator delayedDie ()
@@ -74,7 +72,7 @@ public class Enemy : MonoBehaviour
 		_collider.enabled = false;
 
 		Instantiate (deathExplosion, transform.position, Quaternion.identity);
-		gameObject.SetActive(false);
+		gameObject.SetActive (false);
 //				audSource.PlayOneShot (deathBoomClip);
 //				Destroy (gameObject, deathBoomClip.length);
 	}
@@ -97,15 +95,25 @@ public class Enemy : MonoBehaviour
 	public void updateHealthBar ()
 	{
 		_healthSlider.value = health;
-
 	}
 
-	public void takeDamage ()
+	public void takeDamage (int damage)
 	{
-		health--;
+		StartCoroutine(showDamageColor());
+		stunned = true;
+		health -= damage;
 		updateHealthBar ();
+		if (health <= 0) {
+			Die();
+		}
 	}
 
+	IEnumerator showDamageColor(){
+		_renderer.material.color = Color.red;
+		yield return new WaitForSeconds(.3f);
+		_renderer.material.color = _origColor;
+
+	}
 
 	void OnCollisionEnter (Collision coll)
 	{

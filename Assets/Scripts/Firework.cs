@@ -40,7 +40,14 @@ public class Firework : MonoBehaviour
 
 		for (int i = 0; i < colliders.Length; i++) {
 			if (colliders [i].gameObject.CompareTag ("Enemy")) {
-				colliders [i].GetComponent<Enemy> ().Die ();
+				GameObject enemyGO = colliders[i].gameObject;
+
+				float distance = Vector3.Distance(gameObject.transform.position, enemyGO.transform.position);
+				float healthToTake = distance.Remap(0, explosionRadius, 100, 0);
+
+				enemyGO.GetComponent<Enemy>().takeDamage((int)healthToTake);
+//				colliders [i].GetComponent<Enemy> ().Die ();
+//				colliders
 			}
 		}
 

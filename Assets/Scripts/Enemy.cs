@@ -19,24 +19,27 @@ public class Enemy : MonoBehaviour
 	}
 
 	protected GameObject _target;
-	[SerializeField] private ParticleSystem _deathExplosionParticles;
+	[SerializeField] GameObject lootPrefab;
+	[SerializeField] private GameObject _deathExplosionPrefab;
 	[SerializeField] private Renderer _renderer;
 
 	[SerializeField] private Slider _healthSlider;
 
 	public bool stunned = false;
 	private bool _targetSet = false;
-	private Color _origColor;
+	[SerializeField] private Color _origColor;
 	[SerializeField] private float _rotationSpeed = 10f;
 	[SerializeField] private float _moveSpeed = 4f;
 	private float _stunnedCountdown = 5f;
-	private int health = 10;
+	private int _health = 100;
+
+
 
 	// Use this for initialization
 	void Start ()
 	{
-		_origColor = _renderer.material.color;
-		_deathExplosionParticles.startColor = _origColor;
+//		_origColor = _renderer.material.color;
+		_deathExplosionPrefab.GetComponent<ParticleSystem>().startColor = _origColor;
 		updateHealthBar ();
 	}
 
@@ -58,6 +61,17 @@ public class Enemy : MonoBehaviour
 
 	}
 
+	public void initialize ()
+	{
+		stunned = false;
+		_renderer.material.color = _origColor;
+		_renderer.enabled = true;
+		_collider.enabled = true;
+		_health = 10;
+		updateHealthBar ();
+		gameObject.SetActive (true);
+	}
+
 	public void delayedDie (bool killedByPlayer)
 	{
 		StartCoroutine (delayedDieCoroutine (killedByPlayer));
@@ -73,11 +87,15 @@ public class Enemy : MonoBehaviour
 	{
 		_renderer.enabled = false;
 		_collider.enabled = false;
-
-		Instantiate (_deathExplosionParticles, transform.position, Quaternion.identity);
-
+	
+		GameObject explosion = Instantiate (_deathExplosionPrefab, transform.position, Quaternion.identity) as GameObject;
+		explosion.name = "Explosion" + gameObject.name;
+		print ("explosion: " + explosion.name);
 		if (killedByPlayer) {
-			releaseReward ();
+			float r = Random.value;
+			if (r <= .25f) {
+				releaseReward ();
+			}
 		}
 
 		gameObject.SetActive (false);
@@ -102,17 +120,17 @@ public class Enemy : MonoBehaviour
 
 	public void updateHealthBar ()
 	{
-		_healthSlider.value = health;
+		_healthSlider.value = _health;
 	}
 
 	public void takeDamage (int damage)
 	{
 		StartCoroutine (showDamageColor ());
 		stunned = true;
-		health -= damage;
+		_health -= damage;
 		updateHealthBar ();
-		if (health <= 0) {
-			StartCoroutine(delayedDieCoroutine (true));
+		if (_health <= 0) {
+			StartCoroutine (delayedDieCoroutine (true));
 		}
 	}
 
@@ -123,14 +141,15 @@ public class Enemy : MonoBehaviour
 		_renderer.material.color = _origColor;
 	}
 
-	void releaseReward() {
-		print ("releasing reward");	
+	void releaseReward ()
+	{
+		GameObject lootGO = Instantiate (lootPrefab, transform.transform.position, Quaternion.identity) as GameObject;	
 	}
 
 	void OnCollisionEnter (Collision coll)
 	{
 		if (coll.gameObject.CompareTag ("Target")) {
-			coll.gameObject.GetComponent<Tower>().takeDamage (1);
+			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
 
 			die (false);
 		}

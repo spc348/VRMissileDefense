@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField] private AudioSource audSource;
 	[SerializeField] private AudioClip deathBoomClip;
 	[SerializeField] private Collider _collider;
+	[SerializeField] private GameObject _dooberSplashPrefab;
 
 	public GameObject Target {
 		get { return _target; }
@@ -58,7 +59,9 @@ public class Enemy : MonoBehaviour
 			}
 		}
 
-
+//		if (Input.GetKeyDown(KeyCode.Space)) {
+//			showDooberSplash();
+//		}
 	}
 
 	public void initialize ()
@@ -90,7 +93,6 @@ public class Enemy : MonoBehaviour
 	
 		GameObject explosion = Instantiate (_deathExplosionPrefab, transform.position, Quaternion.identity) as GameObject;
 		explosion.name = "Explosion" + gameObject.name;
-		print ("explosion: " + explosion.name);
 		if (killedByPlayer) {
 			float r = Random.value;
 			if (r <= .25f) {
@@ -123,9 +125,16 @@ public class Enemy : MonoBehaviour
 		_healthSlider.value = _health;
 	}
 
+	public void showDooberSplash(int amount) {
+		GameObject dooberSplash = Instantiate (_dooberSplashPrefab, transform.position, Quaternion.identity) as GameObject;
+		dooberSplash.GetComponent<DooberSplash>().setText(amount);
+		LeanTween.moveY(dooberSplash, transform.position.y + 5f, 1f).setEase(LeanTweenType.easeOutExpo);
+	}
+
 	public void takeDamage (int damage)
 	{
 		StartCoroutine (showDamageColor ());
+		showDooberSplash(damage);
 		stunned = true;
 		_health -= damage;
 		updateHealthBar ();

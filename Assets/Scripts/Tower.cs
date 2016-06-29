@@ -29,6 +29,12 @@ public class Tower : MonoBehaviour
 //		StartCoroutine(makeTower());
 	}
 
+	public void heal(int amount) {
+		StartCoroutine (showHealColor ());
+		_health += amount;
+		updateHealthBar();
+	}
+
 
 	public void takeDamage (int amount)
 	{
@@ -54,11 +60,20 @@ public class Tower : MonoBehaviour
 		_renderer.material.color = _origColor;
 	}
 
+	IEnumerator showHealColor ()
+	{
+		_renderer.material.color = Color.green;
+		yield return new WaitForSeconds (.1f);
+		_renderer.material.color = _origColor;
+	}
+
 	void die ()
 	{
 		Instantiate (_deathParticlesPrefab, transform.position, Quaternion.identity);
 		Destroy (gameObject);
 	}
+
+
 
 	void OnCollisionEnter (Collision coll)
 	{
@@ -66,6 +81,8 @@ public class Tower : MonoBehaviour
 		}
 		
 	}
+
+
 
 	//	IEnumerator makeTower ()
 	//	{

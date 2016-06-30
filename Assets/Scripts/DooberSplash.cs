@@ -10,6 +10,9 @@ public class DooberSplash : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		GameObject player = GameObject.Find ("Player");
+		transform.LookAt (2*transform.position - player.transform.position);
+//		transform.rotation = Quaternion.Euler (transform.rotation.x, transform.rotation.y + 180, transform.rotation.z);
 		StartCoroutine (fadeAndDestroy ());
 	}
 	
@@ -21,7 +24,9 @@ public class DooberSplash : MonoBehaviour
 
 	IEnumerator fadeAndDestroy ()
 	{
+
 		yield return new WaitForSeconds (.5f);
+
 		LeanTween.value (gameObject, _dooberText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
 			_dooberText.color = _c;	
 		});
@@ -29,8 +34,9 @@ public class DooberSplash : MonoBehaviour
 		Destroy (gameObject);
 	}
 
-	public void setText(int amount) {
+	public void setText (int amount)
+	{
 		string prefix = "";
-		_dooberText.text = amount.ToString();
+		_dooberText.text = amount.ToString ();
 	}
 }

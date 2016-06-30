@@ -31,7 +31,7 @@ public class ButtonHelper : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
-		//do your stuff when highlighted
+
 		_shooter.canShoot = false;
 	}
 

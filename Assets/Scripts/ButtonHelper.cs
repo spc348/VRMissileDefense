@@ -19,6 +19,8 @@ public class ButtonHelper : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 	
 	}
 
+
+
 	public void purchaseItem() {
 
 		if (_shooter.lootCount >= _itemCost) {

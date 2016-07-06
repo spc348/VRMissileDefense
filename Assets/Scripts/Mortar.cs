@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Firework : MonoBehaviour
+public class Mortar : MonoBehaviour
 {
 	[SerializeField] private AudioSource _audioSource;
 	[SerializeField] private Renderer _renderer;
 	public Rigidbody rb;
-	[SerializeField] private GameObject _fireworkParticlesPrefab;
+	[SerializeField] private GameObject _mortarParticlesPrefab;
 
 	[SerializeField] private Color[] _colors;
 	[SerializeField] private Color _color;
@@ -60,8 +60,8 @@ public class Firework : MonoBehaviour
 		}
 
 		_renderer.enabled = false;
-		GameObject fireworkParticles = Instantiate (_fireworkParticlesPrefab, transform.position, Quaternion.identity) as GameObject;
-		fireworkParticles.GetComponent<ParticleSystem> ().startColor = _color;
+		GameObject mortarParticles = Instantiate (_mortarParticlesPrefab, transform.position, Quaternion.identity) as GameObject;
+		mortarParticles.GetComponent<ParticleSystem> ().startColor = _color;
 		_audioSource.Play ();
 		Destroy (gameObject, 2f);
 	}

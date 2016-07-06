@@ -2,41 +2,40 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class EnemyManager : MonoBehaviour {
+public class EnemyManager : MonoBehaviour
+{
+
+	public int round = 1;
+	private int numEnemies = 2;
+
 	[SerializeField] private ObjectPoolerScript _objectPooler;
-	[SerializeField] private GameObject _worldSpaceCanvas;
-	public int numEnemies = 100;
+	[SerializeField] private GameObject _enemyShipDestination;
 
 	public GameObject[] targets;
-	[SerializeField] private List<Enemy> enemies = new List<Enemy>();
-
+	[SerializeField] private List<EnemyShip> enemyShips = new List<EnemyShip> ();
+	public List<Enemy> enemies = new List<Enemy> ();
+	[SerializeField] private GameObject[] _shipSpawnPoints;
 
 
 	// Use this for initialization
-	void Start () {
-	}
-	
-	public void spawnEnemies() {
-		StartCoroutine(spawnEnemiesCoroutine());
+	void Start ()
+	{
+		StartNewRound ();
 	}
 
-	IEnumerator spawnEnemiesCoroutine() {
-
-		for (int i = 0; i < numEnemies; i++) {
-//			Vector3 spawnPos = new Vector3 (Random.Range(-50f, 50f), Random.Range(30f, 100f), Random.Range(-50f, 50f));
-			Vector3 spawnPos = transform.parent.transform.position;
-			GameObject enemyGO = _objectPooler.GetPooledObject();
-			enemyGO.name = "Enemy" + i.ToString();
-			enemyGO.transform.position = spawnPos;
-			enemyGO.transform.SetParent(_worldSpaceCanvas.transform);
-			Enemy enemy = enemyGO.GetComponent<Enemy>();
-			enemy.Target = targets[Random.Range(0,targets.Length)];
-			enemy.initialize();
-			enemies.Add(enemy);
-			yield return new WaitForSeconds (.1f);
-		}
-		
+	public void spawnEnemies ()
+	{
+//		StartCoroutine(spawnEnemiesCoroutine());
 	}
 
+	void StartNewRound ()
+	{
+		GameObject enemyShipGO = _objectPooler.GetPooledObject ();
+		enemyShipGO.transform.position = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
 
+		EnemyShip enemyShip = enemyShipGO.GetComponent<EnemyShip> ();
+		enemyShipGO.SetActive (true);
+		enemyShip.enemyManager = this;
+		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
+	}
 }

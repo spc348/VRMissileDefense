@@ -6,9 +6,12 @@ using TMPro;
 public class Shooter : MonoBehaviour
 {
 
-	private Firework _mortar;
+	[SerializeField] private AudioSource _audSource;
+	private Mortar _mortar;
 
-	[SerializeField] private GameObject _fireworkPrefab;
+	[SerializeField] private Camera mainCam;
+
+	[SerializeField] private GameObject _mortarPrefab;
 	[SerializeField] private GameObject _spawnPos;
 	[SerializeField] private GameObject _reticle;
 	[SerializeField] private TextMeshProUGUI _lootText;
@@ -16,10 +19,23 @@ public class Shooter : MonoBehaviour
 	public bool canShoot = true;
 
 	delegate void ShootWeapon ();
-
 	ShootWeapon shootWeapon;
 
+	//Mortar
 	private bool _mortarPrimed = false;
+
+
+	//Pistol
+	[SerializeField] private GameObject _pistolFlare;
+	[SerializeField] private LineRenderer _lineRenderer;
+	[SerializeField] private AudioClip _pistolFireClip;
+	public float _fireRate = .25f;
+	private float _nextFireTime;
+	public ParticleSystem smokeParticles;
+	public GameObject hitParticles;
+	public float range = 100050;
+
+
 	public int lootCount = 0;
 
 
@@ -27,7 +43,7 @@ public class Shooter : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon("mortar");
+		SwitchWeapon("pistol");
 	}
 	
 	// Update is called once per frame
@@ -57,8 +73,8 @@ public class Shooter : MonoBehaviour
 
 			if (canShoot) {
 				if (!_mortarPrimed) {
-					GameObject fireworkGO = Instantiate (_fireworkPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
-					_mortar = fireworkGO.GetComponent<Firework> ();
+					GameObject fireworkGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
+					_mortar = fireworkGO.GetComponent<Mortar> ();
 
 					Vector3 shootDir = (_reticle.transform.position - _spawnPos.transform.position).normalized;
 					_mortar.rb.AddForce (shootDir * 50f, ForceMode.Impulse);
@@ -76,10 +92,32 @@ public class Shooter : MonoBehaviour
 	public void ShootPistol ()
 	{
 
-		if (GvrViewer.Instance.Triggered) {
-			if (canShoot) {
-				print ("shooting pistol");
+		RaycastHit hit;
+		Vector3 rayOrigin = mainCam.ViewportToWorldPoint (new Vector3 (.5f, .5f, 0));
+
+		if (Input.GetButtonDown("Fire1") && Time.time > _nextFireTime)
+		{
+
+			_nextFireTime = Time.time + _fireRate;
+
+			if (Physics.Raycast(rayOrigin, mainCam.transform.forward, out hit, range))
+			{
+				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy>();
+				if (enemy != null)
+				{
+					enemy.takeDamage(Random.Range(1,3));
+				}
+
+				if(hit.rigidbody != null)
+				{
+					hit.rigidbody.AddForce(-hit.normal * 1f, ForceMode.Impulse);
+				}
+
+				_lineRenderer.SetPosition(0, _reticle.transform.position);
+				_lineRenderer.SetPosition(1, hit.point);
+				Instantiate(hitParticles, hit.point, Quaternion.identity);
 			}
+						StartCoroutine (PistolShotEffectCoroutine ());
 		}
 
 	}
@@ -88,6 +126,13 @@ public class Shooter : MonoBehaviour
 	{
 
 		print ("shooting rocket");
+	}
+
+	IEnumerator PistolShotEffectCoroutine() {
+		_pistolFlare.gameObject.SetActive (true);
+		yield return new WaitForSeconds (.075f);
+		_audSource.PlayOneShot (_pistolFireClip);
+		_pistolFlare.gameObject.SetActive (false);
 	}
 
 	public void increaseLootCount (int lootValue)

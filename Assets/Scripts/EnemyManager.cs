@@ -17,6 +17,12 @@ public class EnemyManager : MonoBehaviour
 	[SerializeField] private GameObject[] _shipSpawnPoints;
 
 
+	public delegate void ClickAction();
+	public static event ClickAction OnClicked;
+
+	public delegate void CheckEnemies();
+	public static event CheckEnemies OnCheckEnemies;
+
 	// Use this for initialization
 	void Start ()
 	{

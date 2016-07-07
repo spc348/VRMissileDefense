@@ -8,6 +8,7 @@ public class EnemyShip : MonoBehaviour
 	[SerializeField] private GameObject _worldSpaceCanvas;
 
 	[SerializeField] private GameObject _shipDestination;
+	[SerializeField] private GameObject _shipExitDestination;
 	[SerializeField] public  EnemyManager enemyManager;
 	private float _distanceFromDestination = Mathf.Infinity;
 	private float _radius = 100f;
@@ -20,6 +21,7 @@ public class EnemyShip : MonoBehaviour
 	void Start ()
 	{
 		_worldSpaceCanvas = GameObject.Find ("WorldSpaceCanvas");
+		_shipExitDestination = GameObject.Find ("EnemyShipExitDestination");
 	}
 
 	void Update ()
@@ -68,6 +70,16 @@ public class EnemyShip : MonoBehaviour
 			yield return new WaitForSeconds (Random.Range(1f, 5f));
 		}
 
+		StartCoroutine(exit ());
+
+	}
+
+	IEnumerator exit() {
+		_isInRadius = false;
+		LeanTween.move (gameObject, _shipExitDestination.transform.position, 5f);
+		LeanTween.alpha (gameObject, 0f, 2f);
+		yield return new WaitForSeconds (5f);
+		gameObject.SetActive (false);
 	}
 
 }

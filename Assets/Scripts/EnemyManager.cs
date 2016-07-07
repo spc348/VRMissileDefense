@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 
 public class EnemyManager : MonoBehaviour
 {
@@ -16,29 +17,33 @@ public class EnemyManager : MonoBehaviour
 	public List<Enemy> enemies = new List<Enemy> ();
 	[SerializeField] private GameObject[] _shipSpawnPoints;
 
+	[SerializeField] private TextMeshProUGUI _roundText;
 
-//	public delegate void ClickAction ();
-//
-//	public static event ClickAction OnClicked;
-//
-//	public delegate void CheckEnemies ();
-//
-//	public static event CheckEnemies OnCheckEnemies;
+	private bool _isFirstRound = true;
+
+	//	public delegate void ClickAction ();
+	//
+	//	public static event ClickAction OnClicked;
+	//
+	//	public delegate void CheckEnemies ();
+	//
+	//	public static event CheckEnemies OnCheckEnemies;
 
 	void OnEnable ()
 	{
-		GameEventManager.StartListening ("CheckEnemyList", CheckEnemyList);
+		GameEventManager.StartListening ("CheckEnemyList", checkEnemyList);
 	}
 
 	void OnDisable ()
 	{
-		GameEventManager.StopListening ("CheckEnemyList", CheckEnemyList);
+		GameEventManager.StopListening ("CheckEnemyList", checkEnemyList);
 	}
 
 	// Use this for initialization
 	void Start ()
 	{
-		StartNewRound ();
+		StartCoroutine (startNewRound ());
+		_isFirstRound = false;
 	}
 
 	public void spawnEnemies ()
@@ -46,8 +51,10 @@ public class EnemyManager : MonoBehaviour
 //		StartCoroutine(spawnEnemiesCoroutine());
 	}
 
-	void StartNewRound ()
+	IEnumerator startNewRound ()
 	{
+
+		yield return StartCoroutine (showRoundText ());
 		GameObject enemyShipGO = _objectPooler.GetPooledObject ();
 		enemyShipGO.transform.position = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
 
@@ -57,11 +64,39 @@ public class EnemyManager : MonoBehaviour
 		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
 	}
 
-	void CheckEnemyList ()
+	void checkEnemyList ()
 	{
 		print ("enemiesCount: " + enemies.Count);
 		if (enemies.Count == 0) {
-			print ("enemies out");
+			round++;
+			numEnemies *= 2;
+			StartCoroutine (startNewRound ());
 		}
+	}
+
+	IEnumerator showRoundText ()
+	{
+
+		if (!_isFirstRound) {
+			_roundText.text = "Round Complete";
+			LeanTween.value (_roundText.gameObject, _roundText.color, Color.black, .5f).setOnUpdate ((Color _c) => {
+				_roundText.color = _c;
+			});
+		}
+		yield return new WaitForSeconds (2f);
+		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
+			_roundText.color = _c;
+		});
+		yield return new WaitForSeconds (1f);
+		_roundText.text = "Round " + round;
+		LeanTween.value (_roundText.gameObject, _roundText.color, Color.black, .5f).setOnUpdate ((Color _c) => {
+			_roundText.color = _c;
+		});
+
+		yield return new WaitForSeconds (2f);
+		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
+			_roundText.color = _c;
+		});
+
 	}
 }

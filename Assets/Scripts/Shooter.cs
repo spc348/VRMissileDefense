@@ -27,7 +27,7 @@ public class Shooter : MonoBehaviour
 
 	//Pistol
 	[SerializeField] private GameObject _pistolFlare;
-	[SerializeField] private LineRenderer _lineRenderer;
+//	[SerializeField] private LineRenderer _lineRenderer;
 	[SerializeField] private AudioClip _pistolFireClip;
 	public float _fireRate = .25f;
 	private float _nextFireTime;
@@ -38,10 +38,6 @@ public class Shooter : MonoBehaviour
 
 	public int lootCount = 0;
 
-
-
-
-
 	// Use this for initialization
 	void Start ()
 	{
@@ -51,7 +47,9 @@ public class Shooter : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		shootWeapon();
+		if (canShoot) {
+			shootWeapon();
+		}
 	}
 
 	public void SwitchWeapon (string weaponName)
@@ -68,12 +66,13 @@ public class Shooter : MonoBehaviour
 		}
 	}
 
+
 	public void ShootMortar ()
 	{
 
 		if (GvrViewer.Instance.Triggered) {
 
-			if (canShoot) {
+//			if (canShoot) {
 				if (!_mortarPrimed) {
 					GameObject fireworkGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
 					_mortar = fireworkGO.GetComponent<Mortar> ();
@@ -85,7 +84,7 @@ public class Shooter : MonoBehaviour
 					_mortar.explode ();
 					_mortarPrimed = false;
 				}
-			}
+//			}
 		}
 
 
@@ -115,8 +114,8 @@ public class Shooter : MonoBehaviour
 					hit.rigidbody.AddForce(-hit.normal * 1f, ForceMode.Impulse);
 				}
 
-				_lineRenderer.SetPosition(0, _reticle.transform.position);
-				_lineRenderer.SetPosition(1, hit.point);
+//				_lineRenderer.SetPosition(0, _reticle.transform.position);
+//				_lineRenderer.SetPosition(1, hit.point);
 				Instantiate(hitParticles, hit.point, Quaternion.identity);
 			}
 						StartCoroutine (PistolShotEffectCoroutine ());

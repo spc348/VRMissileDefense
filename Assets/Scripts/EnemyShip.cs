@@ -77,7 +77,6 @@ public class EnemyShip : MonoBehaviour
 	IEnumerator exit() {
 		_isInRadius = false;
 		LeanTween.move (gameObject, _shipExitDestination.transform.position, 5f);
-		LeanTween.alpha (gameObject, 0f, 2f);
 		yield return new WaitForSeconds (5f);
 		gameObject.SetActive (false);
 	}

@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
 	void Start ()
 	{
 //		_origColor = _renderer.material.color;
-		_deathExplosionPrefab.GetComponent<ParticleSystem>().startColor = _origColor;
+		_deathExplosionPrefab.GetComponent<ParticleSystem> ().startColor = _origColor;
 		updateHealthBar ();
 	}
 
@@ -67,9 +67,9 @@ public class Enemy : MonoBehaviour
 			}
 		}
 
-//		if (Input.GetKeyDown(KeyCode.Space)) {
-//			showDooberSplash();
-//		}
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			audSource.PlayOneShot (deathBoomClip);
+		}
 	}
 
 	public void initialize ()
@@ -96,6 +96,7 @@ public class Enemy : MonoBehaviour
 
 	void die (bool killedByPlayer)
 	{
+		audSource.PlayOneShot (deathBoomClip);
 		_renderer.enabled = false;
 		_collider.enabled = false;
 	
@@ -108,10 +109,9 @@ public class Enemy : MonoBehaviour
 			}
 		}
 
-		gameObject.SetActive (false);
-		enemyManager.enemies.Remove(this);
-		GameEventManager.TriggerEvent("CheckEnemyList");
-		//		audSource.PlayOneShot (deathBoomClip);
+//		gameObject.SetActive (false);
+		enemyManager.enemies.Remove (this);
+		GameEventManager.TriggerEvent ("CheckEnemyList");
 		//		Destroy (gameObject, deathBoomClip.length);
 	}
 
@@ -135,16 +135,17 @@ public class Enemy : MonoBehaviour
 		_healthSlider.value = _health;
 	}
 
-	public void showDooberSplash(int amount) {
+	public void showDooberSplash (int amount)
+	{
 		GameObject dooberSplash = Instantiate (_dooberSplashPrefab, transform.position, Quaternion.identity) as GameObject;
-		dooberSplash.GetComponent<DooberSplash>().setText(amount);
-		LeanTween.moveY(dooberSplash, transform.position.y + 5f, 1f).setEase(LeanTweenType.easeOutExpo);
+		dooberSplash.GetComponent<DooberSplash> ().setText (amount);
+		LeanTween.moveY (dooberSplash, transform.position.y + 5f, 1f).setEase (LeanTweenType.easeOutExpo);
 	}
 
 	public void takeDamage (int damage)
 	{
 		StartCoroutine (showDamageColor ());
-		showDooberSplash(damage);
+		showDooberSplash (damage);
 		stunned = true;
 		_health -= damage;
 		updateHealthBar ();

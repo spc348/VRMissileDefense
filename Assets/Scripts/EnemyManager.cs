@@ -17,11 +17,23 @@ public class EnemyManager : MonoBehaviour
 	[SerializeField] private GameObject[] _shipSpawnPoints;
 
 
-	public delegate void ClickAction();
-	public static event ClickAction OnClicked;
+//	public delegate void ClickAction ();
+//
+//	public static event ClickAction OnClicked;
+//
+//	public delegate void CheckEnemies ();
+//
+//	public static event CheckEnemies OnCheckEnemies;
 
-	public delegate void CheckEnemies();
-	public static event CheckEnemies OnCheckEnemies;
+	void OnEnable ()
+	{
+		GameEventManager.StartListening ("CheckEnemyList", CheckEnemyList);
+	}
+
+	void OnDisable ()
+	{
+		GameEventManager.StopListening ("CheckEnemyList", CheckEnemyList);
+	}
 
 	// Use this for initialization
 	void Start ()
@@ -43,5 +55,13 @@ public class EnemyManager : MonoBehaviour
 		enemyShipGO.SetActive (true);
 		enemyShip.enemyManager = this;
 		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
+	}
+
+	void CheckEnemyList ()
+	{
+		print ("enemiesCount: " + enemies.Count);
+		if (enemies.Count == 0) {
+			print ("enemies out");
+		}
 	}
 }

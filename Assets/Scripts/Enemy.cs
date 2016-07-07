@@ -4,7 +4,7 @@ using System.Collections;
 
 public class Enemy : MonoBehaviour
 {
-	[SerializeField] private EnemyManager _enemyManager;
+	[SerializeField] public EnemyManager enemyManager;
 	
 	[SerializeField] private AudioSource audSource;
 	[SerializeField] private AudioClip deathBoomClip;
@@ -34,8 +34,16 @@ public class Enemy : MonoBehaviour
 	private float _stunnedCountdown = 5f;
 	private int _health = 100;
 
+	void OnEnable ()
+	{
+		
+	}
 
+	void OnDisable ()
+	{
 
+	}
+		
 	// Use this for initialization
 	void Start ()
 	{
@@ -101,6 +109,8 @@ public class Enemy : MonoBehaviour
 		}
 
 		gameObject.SetActive (false);
+		enemyManager.enemies.Remove(this);
+		GameEventManager.TriggerEvent("CheckEnemyList");
 		//		audSource.PlayOneShot (deathBoomClip);
 		//		Destroy (gameObject, deathBoomClip.length);
 	}

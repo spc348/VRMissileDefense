@@ -62,7 +62,9 @@ public class EnemyShip : MonoBehaviour
 			Enemy enemy = enemyGO.GetComponent<Enemy> ();
 			enemy.Target = enemyManager.targets [Random.Range (0, enemyManager.targets.Length)];
 			enemy.initialize ();
+			enemy.enemyManager = enemyManager;
 			enemyManager.enemies.Add (enemy);
+
 			yield return new WaitForSeconds (Random.Range(1f, 5f));
 		}
 

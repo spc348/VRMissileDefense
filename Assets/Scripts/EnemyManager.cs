@@ -7,7 +7,7 @@ public class EnemyManager : MonoBehaviour
 {
 
 	public int round = 1;
-	private int numEnemies = 2;
+	private int numEnemies = 4;
 
 	[SerializeField] private ObjectPoolerScript _objectPooler;
 	[SerializeField] private GameObject _enemyShipDestination;
@@ -17,6 +17,7 @@ public class EnemyManager : MonoBehaviour
 	public List<Enemy> enemies = new List<Enemy> ();
 	[SerializeField] private GameObject[] _shipSpawnPoints;
 
+	[SerializeField] private TextMeshProUGUI _enemyCountText;
 	[SerializeField] private TextMeshProUGUI _roundText;
 
 	private bool _isFirstRound = true;
@@ -66,6 +67,7 @@ public class EnemyManager : MonoBehaviour
 
 	void checkEnemyList ()
 	{
+		_enemyCountText.text = "ENEMIES: " + enemies.Count.ToString ();
 		print ("enemiesCount: " + enemies.Count);
 		if (enemies.Count == 0) {
 			round++;
@@ -97,6 +99,8 @@ public class EnemyManager : MonoBehaviour
 		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
 			_roundText.color = _c;
 		});
+
+		_enemyCountText.text = "ENEMIES: " + numEnemies;
 
 	}
 }

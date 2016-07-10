@@ -30,7 +30,7 @@ public class Enemy : MonoBehaviour
 	private bool _targetSet = false;
 	[SerializeField] private Color _origColor;
 	[SerializeField] private float _rotationSpeed = 10f;
-	[SerializeField] private float _moveSpeed = 4f;
+	[SerializeField] private float _moveSpeed = 8f;
 	private float _stunnedCountdown = 5f;
 	private int _health = 100;
 
@@ -48,7 +48,7 @@ public class Enemy : MonoBehaviour
 	void Start ()
 	{
 //		_origColor = _renderer.material.color;
-		_deathExplosionPrefab.GetComponent<ParticleSystem>().startColor = _origColor;
+		_deathExplosionPrefab.GetComponent<ParticleSystem> ().startColor = _origColor;
 		updateHealthBar ();
 	}
 
@@ -91,10 +91,10 @@ public class Enemy : MonoBehaviour
 	IEnumerator delayedDieCoroutine (bool killedByPlayer)
 	{
 		yield return new WaitForSeconds (.5f);
-		die (killedByPlayer);
+		StartCoroutine(die (killedByPlayer));
 	}
 
-	void die (bool killedByPlayer)
+	IEnumerator die (bool killedByPlayer)
 	{
 		_renderer.enabled = false;
 		_collider.enabled = false;
@@ -107,11 +107,12 @@ public class Enemy : MonoBehaviour
 				releaseReward ();
 			}
 		}
-
+		yield return null;
+		audSource.PlayOneShot (deathBoomClip);
+		yield return new WaitForSeconds(deathBoomClip.length);
 		gameObject.SetActive (false);
-		enemyManager.enemies.Remove(this);
-		GameEventManager.TriggerEvent("CheckEnemyList");
-		//		audSource.PlayOneShot (deathBoomClip);
+		enemyManager.enemies.Remove (this);
+		GameEventManager.TriggerEvent ("CheckEnemyList");
 		//		Destroy (gameObject, deathBoomClip.length);
 	}
 
@@ -135,16 +136,17 @@ public class Enemy : MonoBehaviour
 		_healthSlider.value = _health;
 	}
 
-	public void showDooberSplash(int amount) {
+	public void showDooberSplash (int amount)
+	{
 		GameObject dooberSplash = Instantiate (_dooberSplashPrefab, transform.position, Quaternion.identity) as GameObject;
-		dooberSplash.GetComponent<DooberSplash>().setText(amount);
-		LeanTween.moveY(dooberSplash, transform.position.y + 5f, 1f).setEase(LeanTweenType.easeOutExpo);
+		dooberSplash.GetComponent<DooberSplash> ().setText (amount);
+		LeanTween.moveY (dooberSplash, transform.position.y + 5f, 1f).setEase (LeanTweenType.easeOutExpo);
 	}
 
 	public void takeDamage (int damage)
 	{
 		StartCoroutine (showDamageColor ());
-		showDooberSplash(damage);
+		showDooberSplash (damage);
 		stunned = true;
 		_health -= damage;
 		updateHealthBar ();
@@ -170,7 +172,7 @@ public class Enemy : MonoBehaviour
 		if (coll.gameObject.CompareTag ("Target")) {
 			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
 
-			die (false);
+			StartCoroutine(die (false));
 		}
 		
 	}

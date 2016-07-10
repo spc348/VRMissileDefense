@@ -22,13 +22,10 @@ public class WeaponsPanel : MonoBehaviour
 
 	public void toggleWeaponsPanel ()
 	{
-		print ("toggling");
 		if (!_isShowing) {
 			show ();
-			print ("showing");
 		} else {
 			hide ();
-			print ("hding");
 		}
 	}
 

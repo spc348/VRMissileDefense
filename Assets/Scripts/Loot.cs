@@ -14,6 +14,7 @@ public class Loot : MonoBehaviour
 
 	void OnCollisionEnter (Collision coll)
 	{
+		print ("loot hit: " + coll.gameObject.name);
 		if (!_movingToPlayer) {
 			if (coll.gameObject.CompareTag ("Ground") || coll.gameObject.CompareTag ("Target")) {
 				LeanTween.move (gameObject, _player.transform.position, 1f).setEase (LeanTweenType.easeInExpo);

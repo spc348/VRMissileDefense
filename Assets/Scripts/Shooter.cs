@@ -19,6 +19,7 @@ public class Shooter : MonoBehaviour
 	public bool canShoot = true;
 
 	delegate void ShootWeapon ();
+
 	ShootWeapon shootWeapon;
 
 	//Mortar
@@ -27,7 +28,7 @@ public class Shooter : MonoBehaviour
 
 	//Pistol
 	[SerializeField] private GameObject _pistolFlare;
-//	[SerializeField] private LineRenderer _lineRenderer;
+	//	[SerializeField] private LineRenderer _lineRenderer;
 	[SerializeField] private AudioClip _pistolFireClip;
 	public float _fireRate = .25f;
 	private float _nextFireTime;
@@ -41,14 +42,14 @@ public class Shooter : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon("pistol");
+		SwitchWeapon ("pistol");
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
 		if (canShoot) {
-			shootWeapon();
+			shootWeapon ();
 		}
 	}
 
@@ -73,17 +74,17 @@ public class Shooter : MonoBehaviour
 		if (GvrViewer.Instance.Triggered) {
 
 //			if (canShoot) {
-				if (!_mortarPrimed) {
-					GameObject fireworkGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
-					_mortar = fireworkGO.GetComponent<Mortar> ();
+			if (!_mortarPrimed) {
+				GameObject fireworkGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
+				_mortar = fireworkGO.GetComponent<Mortar> ();
 
-					Vector3 shootDir = (_reticle.transform.position - _spawnPos.transform.position).normalized;
-					_mortar.rb.AddForce (shootDir * 50f, ForceMode.Impulse);
-					_mortarPrimed = true;
-				} else {
-					_mortar.explode ();
-					_mortarPrimed = false;
-				}
+				Vector3 shootDir = (_reticle.transform.position - _spawnPos.transform.position).normalized;
+				_mortar.rb.AddForce (shootDir * 50f, ForceMode.Impulse);
+				_mortarPrimed = true;
+			} else {
+				_mortar.explode ();
+				_mortarPrimed = false;
+			}
 //			}
 		}
 
@@ -94,31 +95,28 @@ public class Shooter : MonoBehaviour
 	{
 
 		RaycastHit hit;
-		Vector3 rayOrigin = mainCam.ViewportToWorldPoint (new Vector3 (.5f, .5f, 0));
+//		Vector3 rayOrigin = mainCam.ViewportToWorldPoint (new Vector3 (.5f, .5f, 0));
+		Vector3 rayOrigin = _reticle.transform.position;
 
-		if (Input.GetButtonDown("Fire1") && Time.time > _nextFireTime)
-		{
+		if (Input.GetButtonDown ("Fire1") && Time.time > _nextFireTime) {
 
 			_nextFireTime = Time.time + _fireRate;
 
-			if (Physics.Raycast(rayOrigin, mainCam.transform.forward, out hit, range))
-			{
-				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy>();
-				if (enemy != null)
-				{
-					enemy.takeDamage(Random.Range(1,3));
-				}
+			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
+				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
+				if (enemy != null) {
+					enemy.takeDamage (10);
 
-				if(hit.rigidbody != null)
-				{
-					hit.rigidbody.AddForce(-hit.normal * 1f, ForceMode.Impulse);
-				}
+					if (hit.rigidbody != null) {
+						hit.rigidbody.AddForce (-hit.normal * 1f, ForceMode.Impulse);
+					}
 
 //				_lineRenderer.SetPosition(0, _reticle.transform.position);
 //				_lineRenderer.SetPosition(1, hit.point);
-				Instantiate(hitParticles, hit.point, Quaternion.identity);
+					Instantiate (hitParticles, hit.point, Quaternion.identity);
+				}
 			}
-						StartCoroutine (PistolShotEffectCoroutine ());
+			StartCoroutine (PistolShotEffectCoroutine ());
 		}
 
 	}
@@ -129,7 +127,8 @@ public class Shooter : MonoBehaviour
 		print ("shooting rocket");
 	}
 
-	IEnumerator PistolShotEffectCoroutine() {
+	IEnumerator PistolShotEffectCoroutine ()
+	{
 		_pistolFlare.gameObject.SetActive (true);
 		yield return new WaitForSeconds (.075f);
 		_audSource.PlayOneShot (_pistolFireClip);

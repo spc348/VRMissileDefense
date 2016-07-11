@@ -2,13 +2,14 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class Tower : MonoBehaviour
+public class Tower : InteractableObject
 {
 	[SerializeField] private ObjectPoolerScript _objectPoolerScript;
 
 	[SerializeField] private GameObject _deathParticlesPrefab;
 	[SerializeField] private GameObject _towerBlockPrefab;
 	[SerializeField] private GameObject _startingBlock;
+	[SerializeField] private GameObject _towerMovePos;
 	[SerializeField] private Renderer _renderer;
 
 	[SerializeField] private Slider _healthSlider;
@@ -21,9 +22,10 @@ public class Tower : MonoBehaviour
 	//	public int towerWidth = 9;
 
 	// Use this for initialization
-	void Start ()
+	public override void Start ()
 	{
 
+		base.Start();
 		_origColor = _renderer.material.color;
 //		towerBlockSize = _towerBlockPrefab.GetComponent<Renderer> ().bounds.size;
 //		StartCoroutine(makeTower());
@@ -82,6 +84,13 @@ public class Tower : MonoBehaviour
 		
 	}
 
+	public void SetGazedAt(bool gazedAt) {
+		GetComponent<Renderer>().material.color = gazedAt ? Color.blue : _origColor;
+	}
+
+	public void flyPlayerToPos() {
+		LeanTween.move (_player, _towerMovePos.transform.position, 2f).setEase(LeanTweenType.easeInOutExpo);
+	}
 
 
 	//	IEnumerator makeTower ()

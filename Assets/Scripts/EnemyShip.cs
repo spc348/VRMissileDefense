@@ -62,19 +62,22 @@ public class EnemyShip : MonoBehaviour
 			enemyGO.transform.position = spawnPos;
 			enemyGO.transform.SetParent (_worldSpaceCanvas.transform);
 			Enemy enemy = enemyGO.GetComponent<Enemy> ();
-			enemy.Target = enemyManager.targets [Random.Range (0, enemyManager.targets.Length)];
+//			enemy.Target = enemyManager.targets [Random.Range (0, enemyManager.targets.Length)];
+			enemy.Target = enemyManager.targetManager.targets [Random.Range (0, enemyManager.targetManager.targets.Count)];
+
 			enemy.initialize ();
 			enemy.enemyManager = enemyManager;
 			enemyManager.enemies.Add (enemy);
 
-			yield return new WaitForSeconds (Random.Range(1f, 5f));
+			yield return new WaitForSeconds (Random.Range (1f, 5f));
 		}
 
-		StartCoroutine(exit ());
+		StartCoroutine (exit ());
 
 	}
 
-	IEnumerator exit() {
+	IEnumerator exit ()
+	{
 		_isInRadius = false;
 		LeanTween.move (gameObject, _shipExitDestination.transform.position, 5f);
 		yield return new WaitForSeconds (5f);

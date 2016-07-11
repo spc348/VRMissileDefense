@@ -4,7 +4,6 @@ using System.Collections;
 public class TowerMovePos : InteractableObject {
 
 
-
 	public void SetGazedAt(bool gazedAt) {
 		GetComponent<Renderer>().material.color = gazedAt ? Color.green : Color.red;
 	}

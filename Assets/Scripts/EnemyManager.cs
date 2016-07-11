@@ -8,6 +8,7 @@ public class EnemyManager : MonoBehaviour
 
 	public int round = 1;
 	private int numEnemies = 4;
+	public TargetManager targetManager;
 
 	[SerializeField] private ObjectPoolerScript _objectPooler;
 	[SerializeField] private GameObject _enemyShipDestination;

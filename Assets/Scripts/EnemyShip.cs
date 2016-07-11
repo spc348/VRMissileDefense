@@ -10,12 +10,15 @@ public class EnemyShip : MonoBehaviour
 	[SerializeField] private GameObject _shipDestination;
 	[SerializeField] private GameObject _shipExitDestination;
 	[SerializeField] public  EnemyManager enemyManager;
+	public bool hasDroppedOffAllEnemies = false;
+	private bool _isInRadius = false;
 	private float _distanceFromDestination = Mathf.Infinity;
 	private float _radius = 100f;
 	private float _rotateSpeed = 20f;
-	private bool _isInRadius = false;
 
-
+	void OnEnable() {
+		hasDroppedOffAllEnemies = false;	
+	}
 
 	// Use this for initialization
 	void Start ()
@@ -63,7 +66,8 @@ public class EnemyShip : MonoBehaviour
 			enemyGO.transform.SetParent (_worldSpaceCanvas.transform);
 			Enemy enemy = enemyGO.GetComponent<Enemy> ();
 //			enemy.Target = enemyManager.targets [Random.Range (0, enemyManager.targets.Length)];
-			enemy.Target = enemyManager.targetManager.targets [Random.Range (0, enemyManager.targetManager.targets.Count)];
+
+			enemy.Target = enemyManager.targetManager.targetGOs [Random.Range (0, enemyManager.targetManager.targetGOs.Count)];
 
 			enemy.initialize ();
 			enemy.enemyManager = enemyManager;
@@ -73,7 +77,7 @@ public class EnemyShip : MonoBehaviour
 		}
 
 		StartCoroutine (exit ());
-
+		hasDroppedOffAllEnemies = true;
 	}
 
 	IEnumerator exit ()

@@ -14,27 +14,41 @@ public class Tower : InteractableObject
 
 	[SerializeField] private Slider _healthSlider;
 
+	private bool _playerIsAtThisTower = false;
+	private bool _playerIsMoving;
 	[SerializeField] private Color _origColor;
+	private Color _origColorLowAlpha;
+	[SerializeField] private Color _highlightedColor;
+	[SerializeField] private Color _hurtColor;
 	[SerializeField] private int _health = 100;
 
+	public TargetManager targetManager;
 
-	//	Vector3 towerBlockSize;
-	//	public int towerWidth = 9;
+	void OnEnable() {
+		GameEventManager.StartListening ("ResetAllTowers",reset);
+	}
 
+	void OnDisable() {
+		GameEventManager.StopListening ("ResetAllTowers",reset);
+	}
+		
 	// Use this for initialization
 	public override void Start ()
 	{
 
-		base.Start();
+		base.Start ();
 		_origColor = _renderer.material.color;
+		_origColorLowAlpha = new Color(_origColor.r, _origColor.g, _origColor.b, .2f);
+
 //		towerBlockSize = _towerBlockPrefab.GetComponent<Renderer> ().bounds.size;
 //		StartCoroutine(makeTower());
 	}
 
-	public void heal(int amount) {
+	public void heal (int amount)
+	{
 		StartCoroutine (showHealColor ());
 		_health += amount;
-		updateHealthBar();
+		updateHealthBar ();
 	}
 
 
@@ -57,7 +71,7 @@ public class Tower : InteractableObject
 
 	IEnumerator showDamageColor ()
 	{
-		_renderer.material.color = Color.red;
+		_renderer.material.color = _hurtColor;
 		yield return new WaitForSeconds (.1f);
 		_renderer.material.color = _origColor;
 	}
@@ -72,24 +86,42 @@ public class Tower : InteractableObject
 	void die ()
 	{
 		Instantiate (_deathParticlesPrefab, transform.position, Quaternion.identity);
+		targetManager.targetGOs.Remove (gameObject);
 		Destroy (gameObject);
 	}
 
-
-
-	void OnCollisionEnter (Collision coll)
+	public void SetGazedAt (bool gazedAt)
 	{
-		if (coll.gameObject.CompareTag ("Enemy")) {
+		if (!_playerIsAtThisTower) {
+			_renderer.material.color = gazedAt ? _highlightedColor : _origColor;
 		}
-		
 	}
 
-	public void SetGazedAt(bool gazedAt) {
-		GetComponent<Renderer>().material.color = gazedAt ? Color.blue : _origColor;
+	public void flyPlayerToPos ()
+	{
+		if (!_playerIsMoving && !_playerIsAtThisTower) {
+			StartCoroutine (flyPlayerToPosCoroutine ());
+		}
 	}
 
-	public void flyPlayerToPos() {
-		LeanTween.move (_player, _towerMovePos.transform.position, 2f).setEase(LeanTweenType.easeInOutExpo);
+	IEnumerator flyPlayerToPosCoroutine ()
+	{
+
+		GameEventManager.TriggerEvent ("ResetAllTowers");
+		_playerIsMoving = true;
+		LeanTween.move (_player, _towerMovePos.transform.position, .2f).setEase (LeanTweenType.easeOutExpo);
+		while (LeanTween.isTweening (_player)) {
+			yield return null;
+		}
+		LeanTween.color (gameObject, _origColorLowAlpha, 1f);
+		_playerIsMoving = false;
+		_playerIsAtThisTower = true;
+
+	}
+
+	public void reset() {
+		_playerIsAtThisTower = false;
+		_renderer.material.color = _origColor;
 	}
 
 

@@ -23,8 +23,9 @@ public class Enemy : MonoBehaviour
 	[SerializeField] GameObject lootPrefab;
 	[SerializeField] private GameObject _deathExplosionPrefab;
 	[SerializeField] private Renderer _renderer;
-
+	[SerializeField] private SpriteRenderer _faceSpriteRenderer;
 	[SerializeField] private Slider _healthSlider;
+	[SerializeField] private CanvasGroup _healthSliderCanvasGroup;
 
 	public bool stunned = false;
 	private bool _targetSet = false;
@@ -76,9 +77,12 @@ public class Enemy : MonoBehaviour
 	{
 		stunned = false;
 		_renderer.material.color = _origColor;
+		_healthSliderCanvasGroup.alpha = 1f;
 		_renderer.enabled = true;
 		_collider.enabled = true;
+		_faceSpriteRenderer.enabled = true;
 		_health = 10;
+
 		updateHealthBar ();
 		gameObject.SetActive (true);
 	}
@@ -98,7 +102,9 @@ public class Enemy : MonoBehaviour
 	{
 		_renderer.enabled = false;
 		_collider.enabled = false;
-	
+		_faceSpriteRenderer.enabled = false;
+		_healthSliderCanvasGroup.alpha = 0;
+
 		GameObject explosion = Instantiate (_deathExplosionPrefab, transform.position, Quaternion.identity) as GameObject;
 		explosion.name = "Explosion" + gameObject.name;
 		if (killedByPlayer) {
@@ -127,6 +133,10 @@ public class Enemy : MonoBehaviour
 			}
 			transform.position += transform.forward * _moveSpeed * Time.deltaTime;
 //			Debug.DrawLine (transform.position, hit.point, Color.cyan);
+		} else {
+			print ("getting new target");
+			_target = enemyManager.targetManager.targetGOs [Random.Range (0, enemyManager.targetManager.targetGOs.Count)];
+
 		}
 	}
 
@@ -147,7 +157,7 @@ public class Enemy : MonoBehaviour
 	{
 		StartCoroutine (showDamageColor ());
 		showDooberSplash (damage);
-		stunned = true;
+//		stunned = true;
 		_health -= damage;
 		updateHealthBar ();
 		if (_health <= 0) {

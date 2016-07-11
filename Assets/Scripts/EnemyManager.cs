@@ -69,12 +69,24 @@ public class EnemyManager : MonoBehaviour
 	void checkEnemyList ()
 	{
 		_enemyCountText.text = "ENEMIES: " + enemies.Count.ToString ();
-		print ("enemiesCount: " + enemies.Count);
-		if (enemies.Count == 0) {
-			round++;
-			numEnemies *= 2;
-			StartCoroutine (startNewRound ());
+		if (allEnemiesDroppedOff ()) {
+			if (enemies.Count == 0) {
+				round++;
+				numEnemies *= 2;
+				StartCoroutine (startNewRound ());
+			}
 		}
+	}
+
+	bool allEnemiesDroppedOff ()
+	{
+		bool allDroppedOff = true;
+		for (int i = 0; i < enemyShips.Count; i++) {
+			if (!enemyShips [i].hasDroppedOffAllEnemies) {
+				allDroppedOff = false;
+			}
+		}
+		return allDroppedOff;
 	}
 
 	IEnumerator showRoundText ()

@@ -7,10 +7,10 @@ public class Enemy : MonoBehaviour
 {
 	[SerializeField] public EnemyManager enemyManager;
 	
-	[SerializeField] private AudioSource audSource;
-	[SerializeField] private AudioClip deathBoomClip;
-	[SerializeField] private Collider _collider;
-	[SerializeField] private GameObject _dooberSplashPrefab;
+	[SerializeField] protected AudioSource audSource;
+	[SerializeField] protected AudioClip deathBoomClip;
+	[SerializeField] protected Collider _collider;
+	[SerializeField] protected GameObject _dooberSplashPrefab;
 
 	public GameObject Target {
 		get { return _target; }
@@ -22,19 +22,19 @@ public class Enemy : MonoBehaviour
 
 	protected GameObject _target;
 	[SerializeField] GameObject lootPrefab;
-	[SerializeField] private GameObject _deathExplosionPrefab;
-	[SerializeField] private Renderer _renderer;
-	[SerializeField] private SpriteRenderer _faceSpriteRenderer;
-	[SerializeField] private Slider _healthSlider;
-	[SerializeField] private CanvasGroup _healthSliderCanvasGroup;
+	[SerializeField] protected GameObject _deathExplosionPrefab;
+	[SerializeField] protected Renderer _renderer;
+	[SerializeField] protected SpriteRenderer _faceSpriteRenderer;
+	[SerializeField] protected Slider _healthSlider;
+	[SerializeField] protected CanvasGroup _healthSliderCanvasGroup;
 
 	public bool stunned = false;
-	private bool _targetSet = false;
-	[SerializeField] private Color _origColor;
-	[SerializeField] private float _rotationSpeed = 10f;
-	[SerializeField] private float _moveSpeed = 8f;
-	private float _stunnedCountdown = 5f;
-	private int _health = 100;
+	protected bool _targetSet = false;
+	[SerializeField] protected Color _origColor;
+	[SerializeField] protected float _rotationSpeed = 10f;
+	[SerializeField] protected float _moveSpeed = 8f;
+	protected float _stunnedCountdown = 5f;
+	protected int _health = 100;
 
 	void OnEnable ()
 	{
@@ -47,15 +47,14 @@ public class Enemy : MonoBehaviour
 	}
 		
 	// Use this for initialization
-	void Start ()
+	public virtual void Start ()
 	{
-//		_origColor = _renderer.material.color;
 		_deathExplosionPrefab.GetComponent<ParticleSystem> ().startColor = _origColor;
 		updateHealthBar ();
 	}
 
 	// Update is called once per frame
-	void Update ()
+	public virtual void Update ()
 	{
 		if (_targetSet) {
 			if (!stunned) {
@@ -69,9 +68,6 @@ public class Enemy : MonoBehaviour
 			}
 		}
 
-//		if (Input.GetKeyDown(KeyCode.Space)) {
-//			showDooberSplash();
-//		}
 	}
 
 	public void initialize ()
@@ -86,6 +82,7 @@ public class Enemy : MonoBehaviour
 
 		updateHealthBar ();
 		gameObject.SetActive (true);
+		GetComponent<Rigidbody> ().velocity = Vector3.zero;
 	}
 
 	public void delayedDie (bool killedByPlayer)
@@ -96,7 +93,7 @@ public class Enemy : MonoBehaviour
 	IEnumerator delayedDieCoroutine (bool killedByPlayer)
 	{
 		yield return new WaitForSeconds (.5f);
-		StartCoroutine(die (killedByPlayer));
+		StartCoroutine (die (killedByPlayer));
 	}
 
 	IEnumerator die (bool killedByPlayer)
@@ -116,22 +113,16 @@ public class Enemy : MonoBehaviour
 		}
 		yield return null;
 		audSource.PlayOneShot (deathBoomClip);
-		yield return new WaitForSeconds(deathBoomClip.length);
+		yield return new WaitForSeconds (deathBoomClip.length);
 		gameObject.SetActive (false);
 		enemyManager.enemies.Remove (this);
 		GameEventManager.TriggerEvent ("CheckEnemyList");
-		//		Destroy (gameObject, deathBoomClip.length);
 	}
 
-	public void MoveTowardTarget ()
+	public virtual void MoveTowardTarget ()
 	{
 		if (_target != null) {
 			transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.LookRotation (_target.transform.position - transform.position), _rotationSpeed * Time.fixedDeltaTime);
-			RaycastHit hit;
-			float offsetAlign = 0f;
-			if (Physics.Raycast (transform.position, Vector3.down, out hit)) {
-				//			transform.position = new Vector3(transform.position.x, transform.position.y + hit.point.y + offsetAlign, transform.position.z);
-			}
 			transform.position += transform.forward * _moveSpeed * Time.deltaTime;
 //			Debug.DrawLine (transform.position, hit.point, Color.cyan);
 		} else {
@@ -140,6 +131,7 @@ public class Enemy : MonoBehaviour
 
 		}
 	}
+
 
 
 	public void updateHealthBar ()
@@ -183,7 +175,7 @@ public class Enemy : MonoBehaviour
 		if (coll.gameObject.CompareTag ("Target")) {
 			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
 
-			StartCoroutine(die (false));
+			StartCoroutine (die (false));
 		}
 		
 	}

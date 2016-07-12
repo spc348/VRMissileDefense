@@ -13,6 +13,8 @@ public class EnemyManager : MonoBehaviour
 	[SerializeField] private ObjectPoolerScript _objectPooler;
 	[SerializeField] private GameObject _enemyShipDestination;
 
+	[SerializeField] private GameObject _swarmPrefab;
+
 	public GameObject[] targets;
 	[SerializeField] private List<EnemyShip> enemyShips = new List<EnemyShip> ();
 	public List<Enemy> enemies = new List<Enemy> ();
@@ -61,9 +63,14 @@ public class EnemyManager : MonoBehaviour
 		enemyShipGO.transform.position = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
 
 		EnemyShip enemyShip = enemyShipGO.GetComponent<EnemyShip> ();
+		enemyShips.Add (enemyShip);
 		enemyShipGO.SetActive (true);
 		enemyShip.enemyManager = this;
 		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
+
+		Vector3 swarmSpawnPos = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
+		GameObject swarm = Instantiate (_swarmPrefab, swarmSpawnPos, Quaternion.identity) as GameObject;
+//		swarm.GetComponent<EnemySwarm>().
 	}
 
 	void checkEnemyList ()

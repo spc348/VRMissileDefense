@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using System.Collections;
 
-public class Tower : InteractableObject
+public class Tower : InteractableObject, IPointerEnterHandler, IPointerExitHandler
 {
 	[SerializeField] private ObjectPoolerScript _objectPoolerScript;
 
@@ -15,7 +17,7 @@ public class Tower : InteractableObject
 	[SerializeField] private Slider _healthSlider;
 
 	private bool _playerIsAtThisTower = false;
-	private bool _playerIsMoving;
+	private bool _playerIsMoving = false;
 	[SerializeField] private Color _origColor;
 	private Color _origColorLowAlpha;
 	[SerializeField] private Color _highlightedColor;
@@ -24,12 +26,14 @@ public class Tower : InteractableObject
 
 	public TargetManager targetManager;
 
-	void OnEnable() {
-		GameEventManager.StartListening ("ResetAllTowers",reset);
+	void OnEnable ()
+	{
+		GameEventManager.StartListening ("ResetAllTowers", reset);
 	}
 
-	void OnDisable() {
-		GameEventManager.StopListening ("ResetAllTowers",reset);
+	void OnDisable ()
+	{
+		GameEventManager.StopListening ("ResetAllTowers", reset);
 	}
 		
 	// Use this for initialization
@@ -38,7 +42,7 @@ public class Tower : InteractableObject
 
 		base.Start ();
 		_origColor = _renderer.material.color;
-		_origColorLowAlpha = new Color(_origColor.r, _origColor.g, _origColor.b, .2f);
+		_origColorLowAlpha = new Color (_origColor.r, _origColor.g, _origColor.b, .2f);
 
 //		towerBlockSize = _towerBlockPrefab.GetComponent<Renderer> ().bounds.size;
 //		StartCoroutine(makeTower());
@@ -92,9 +96,9 @@ public class Tower : InteractableObject
 
 	public void SetGazedAt (bool gazedAt)
 	{
-		if (!_playerIsAtThisTower) {
+//		if (!_playerIsAtThisTower) {
 			_renderer.material.color = gazedAt ? _highlightedColor : _origColor;
-		}
+//		}
 	}
 
 	public void flyPlayerToPos ()
@@ -119,10 +123,24 @@ public class Tower : InteractableObject
 
 	}
 
-	public void reset() {
+	public void reset ()
+	{
 		_playerIsAtThisTower = false;
 		_renderer.material.color = _origColor;
 	}
+
+	public override void OnPointerEnter (PointerEventData eventData)
+	{
+		if (!_playerIsAtThisTower) {
+			_shooter.canShoot = false;
+		}
+	}
+
+//	public override void OnPointerExit (PointerEventData eventData)
+//	{
+//		_shooter.canShoot = true;
+//
+//	}
 
 
 	//	IEnumerator makeTower ()

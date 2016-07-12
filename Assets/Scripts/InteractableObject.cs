@@ -15,13 +15,13 @@ public class InteractableObject : MonoBehaviour, IPointerEnterHandler, IPointerE
 	}
 	
 
-	public void OnPointerEnter(PointerEventData eventData)
+	public virtual void OnPointerEnter(PointerEventData eventData)
 	{
 
 		_shooter.canShoot = false;
 	}
 
-	public void OnPointerExit(PointerEventData eventData)
+	public virtual void OnPointerExit(PointerEventData eventData)
 	{
 		_shooter.canShoot = true;
 

@@ -97,7 +97,7 @@ public class Tower : InteractableObject, IPointerEnterHandler, IPointerExitHandl
 	public void SetGazedAt (bool gazedAt)
 	{
 //		if (!_playerIsAtThisTower) {
-			_renderer.material.color = gazedAt ? _highlightedColor : _origColor;
+		_renderer.material.color = gazedAt ? _highlightedColor : _origColor;
 //		}
 	}
 
@@ -120,11 +120,12 @@ public class Tower : InteractableObject, IPointerEnterHandler, IPointerExitHandl
 		LeanTween.color (gameObject, _origColorLowAlpha, 1f);
 		_playerIsMoving = false;
 		_playerIsAtThisTower = true;
-
+		gameObject.layer = LayerMask.NameToLayer ("Ignore Raycast");
 	}
 
 	public void reset ()
 	{
+		gameObject.layer = LayerMask.NameToLayer ("Default");
 		_playerIsAtThisTower = false;
 		_renderer.material.color = _origColor;
 	}
@@ -136,11 +137,11 @@ public class Tower : InteractableObject, IPointerEnterHandler, IPointerExitHandl
 		}
 	}
 
-//	public override void OnPointerExit (PointerEventData eventData)
-//	{
-//		_shooter.canShoot = true;
-//
-//	}
+	//	public override void OnPointerExit (PointerEventData eventData)
+	//	{
+	//		_shooter.canShoot = true;
+	//
+	//	}
 
 
 	//	IEnumerator makeTower ()

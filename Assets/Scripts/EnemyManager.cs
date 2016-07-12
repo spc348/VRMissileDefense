@@ -10,10 +10,11 @@ public class EnemyManager : MonoBehaviour
 	private int numEnemies = 4;
 	public TargetManager targetManager;
 
-	[SerializeField] private ObjectPoolerScript _objectPooler;
+	[SerializeField] private ObjectPoolerScript _shipObjectPooler;
+	[SerializeField] private ObjectPoolerScript _swarmObjectPooler;
+
 	[SerializeField] private GameObject _enemyShipDestination;
 
-	[SerializeField] private GameObject _swarmPrefab;
 
 	public GameObject[] targets;
 	[SerializeField] private List<EnemyShip> enemyShips = new List<EnemyShip> ();
@@ -59,7 +60,7 @@ public class EnemyManager : MonoBehaviour
 	{
 
 		yield return StartCoroutine (showRoundText ());
-		GameObject enemyShipGO = _objectPooler.GetPooledObject ();
+		GameObject enemyShipGO = _shipObjectPooler.GetPooledObject ();
 		enemyShipGO.transform.position = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
 
 		EnemyShip enemyShip = enemyShipGO.GetComponent<EnemyShip> ();
@@ -69,8 +70,10 @@ public class EnemyManager : MonoBehaviour
 		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
 
 		Vector3 swarmSpawnPos = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
-		GameObject swarm = Instantiate (_swarmPrefab, swarmSpawnPos, Quaternion.identity) as GameObject;
-//		swarm.GetComponent<EnemySwarm>().
+		GameObject swarm = _swarmObjectPooler.GetPooledObject();
+		swarm.transform.position = swarmSpawnPos;
+		swarm.GetComponent<EnemySwarm> ().enemyManager = this;
+		swarm.SetActive (true);
 	}
 
 	void checkEnemyList ()

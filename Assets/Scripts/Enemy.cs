@@ -36,15 +36,7 @@ public class Enemy : MonoBehaviour
 	protected float _stunnedCountdown = 5f;
 	protected int _health = 100;
 
-	void OnEnable ()
-	{
-		
-	}
 
-	void OnDisable ()
-	{
-
-	}
 		
 	// Use this for initialization
 	public virtual void Start ()

@@ -12,6 +12,7 @@ public class EnemySwarm : MonoBehaviour
 	void OnEnable ()
 	{
 		_enemiesInSwarm.AddRange (GetComponentsInChildren<SwarmEnemy> ());	
+		enemyManager.enemies.AddRange (GetComponentsInChildren<SwarmEnemy> ());
 		setEnemiesTarget ();
 	}
 

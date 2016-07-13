@@ -13,7 +13,7 @@ public class Mortar : MonoBehaviour
 
 	[SerializeField] private float _timeToWait = 3f;
 
-	public float explosionRadius = 5f;
+	public float explosionRadius = 15f;
 	public float explosionPower = 10.0F;
 	// Use this for initialization
 	void Start ()
@@ -43,7 +43,7 @@ public class Mortar : MonoBehaviour
 				GameObject enemyGO = colliders[i].gameObject;
 
 				float distance = Vector3.Distance(gameObject.transform.position, enemyGO.transform.position);
-				float healthToTake = distance.Remap(0, explosionRadius, 100, 0);
+				float healthToTake = distance.Remap(0, explosionRadius, 0, 100);
 
 				enemyGO.GetComponent<Enemy>().takeDamage((int)healthToTake);
 //				colliders [i].GetComponent<Enemy> ().Die ();

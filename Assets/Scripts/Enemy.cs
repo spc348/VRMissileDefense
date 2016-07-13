@@ -34,7 +34,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField] protected float _rotationSpeed = 10f;
 	[SerializeField] protected float _moveSpeed = 8f;
 	protected float _stunnedCountdown = 5f;
-	protected int _health = 100;
+	protected int _health = 10;
 
 
 		
@@ -82,13 +82,13 @@ public class Enemy : MonoBehaviour
 		StartCoroutine (delayedDieCoroutine (killedByPlayer));
 	}
 
-	IEnumerator delayedDieCoroutine (bool killedByPlayer)
+	protected IEnumerator delayedDieCoroutine (bool killedByPlayer)
 	{
 		yield return new WaitForSeconds (.5f);
 		StartCoroutine (die (killedByPlayer));
 	}
 
-	IEnumerator die (bool killedByPlayer)
+	protected IEnumerator die (bool killedByPlayer)
 	{
 		_renderer.enabled = false;
 		_collider.enabled = false;
@@ -140,29 +140,31 @@ public class Enemy : MonoBehaviour
 
 	public void takeDamage (int damage)
 	{
+		print (gameObject.name + " damage: " + damage);
 		StartCoroutine (showDamageColor ());
 		showDooberSplash (damage);
 //		stunned = true;
 		_health -= damage;
+		print (gameObject.name + " health: " + _health);
 		updateHealthBar ();
 		if (_health <= 0) {
 			StartCoroutine (delayedDieCoroutine (true));
 		}
 	}
 
-	IEnumerator showDamageColor ()
+	protected IEnumerator showDamageColor ()
 	{
 		_renderer.material.color = Color.red;
 		yield return new WaitForSeconds (.3f);
 		_renderer.material.color = _origColor;
 	}
 
-	void releaseReward ()
+	protected void releaseReward ()
 	{
 		GameObject lootGO = Instantiate (lootPrefab, transform.transform.position, Quaternion.identity) as GameObject;	
 	}
 
-	void OnCollisionEnter (Collision coll)
+	protected void OnCollisionEnter (Collision coll)
 	{
 		if (coll.gameObject.CompareTag ("Target")) {
 			coll.gameObject.GetComponent<Tower> ().takeDamage (1);

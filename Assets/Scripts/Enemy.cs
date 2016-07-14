@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField] protected AudioSource audSource;
 	[SerializeField] protected AudioClip deathBoomClip;
 	[SerializeField] protected Collider _collider;
+	[SerializeField] protected Rigidbody _rb;
 	[SerializeField] protected GameObject _dooberSplashPrefab;
 
 	public GameObject Target {
@@ -169,7 +170,7 @@ public class Enemy : MonoBehaviour
 		if (coll.gameObject.CompareTag ("Target")) {
 			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
 
-			StartCoroutine (die (false));
+//			StartCoroutine (die (false));
 		}
 		
 	}

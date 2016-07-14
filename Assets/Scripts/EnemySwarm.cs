@@ -27,6 +27,7 @@ public class EnemySwarm : MonoBehaviour
 		setEnemiesTarget ();
 		for (int i = 0; i < _enemiesInSwarm.Count; i++) {
 			_enemiesInSwarm [i].enemyManager = enemyManager;
+			_enemiesInSwarm [i].enemiesInSwarm = _enemiesInSwarm;
 			_enemiesInSwarm [i].gameObject.transform.SetParent (_worldSpaceCanvas.transform);
 		}
 	}

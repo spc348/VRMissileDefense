@@ -45,7 +45,7 @@ public class Shooter : MonoBehaviour
 	void Start ()
 	{
 		SwitchWeapon ("pistol");
-		Koreographer.Instance.RegisterForEvents ("blink", OnMusicalShoot);
+//		Koreographer.Instance.RegisterForEvents ("blink", OnMusicalShoot);
 
 	}
 	

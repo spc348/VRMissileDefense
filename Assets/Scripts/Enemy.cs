@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 
 using System.Collections;
+using SonicBloom.Koreo;
 
 public class Enemy : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public class Enemy : MonoBehaviour
 	public bool stunned = false;
 	protected bool _targetSet = false;
 	[SerializeField] protected Color _origColor;
+	[SerializeField] protected Color _pulseColor;
 	[SerializeField] protected float _rotationSpeed = 10f;
 	[SerializeField] protected float _moveSpeed = 8f;
 	protected float _stunnedCountdown = 5f;
@@ -44,6 +46,10 @@ public class Enemy : MonoBehaviour
 	{
 		_deathExplosionPrefab.GetComponent<ParticleSystem> ().startColor = _origColor;
 		updateHealthBar ();
+
+		Koreographer.Instance.RegisterForEvents ("blink", OnMusicalBlink);
+
+
 	}
 
 	// Update is called once per frame
@@ -61,6 +67,16 @@ public class Enemy : MonoBehaviour
 			}
 		}
 
+	}
+
+	void OnMusicalBlink (KoreographyEvent evt) {
+		StartCoroutine(pulse ());
+	}
+
+	IEnumerator pulse() {
+		_renderer.material.color = _pulseColor;
+		yield return new WaitForSeconds (.1f);
+		LeanTween.color (gameObject, _origColor, .1f);
 	}
 
 	public void initialize ()

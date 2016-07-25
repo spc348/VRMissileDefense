@@ -45,47 +45,18 @@ public class Shooter : MonoBehaviour
 	void Start ()
 	{
 		SwitchWeapon ("pistol");
-//		Koreographer.Instance.RegisterForEvents ("blink", OnMusicalShoot);
 
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-//		if (canShoot) {
-//			shootWeapon ();
-//		}
+		if (canShoot) {
+			shootWeapon ();
+		}
 	}
 
-	void OnMusicalShoot (KoreographyEvent evt)
-	{
-		kEventCount++;
-		print ("keventCount: " + kEventCount);
-		shootWeapon ();
-//		if (Input.GetButton ("Fire1") && Time.timeScale != 0f) {
-//		}
-	}
-	//	using UnityEngine;
-	////	using SonicBloom.Koreo;
-	//
-	//	public class MusicalShooting : MonoBehaviour {
-	//
-	//		CompleteProject.PlayerShooting shootCom;
-	//
-	//		// Use this for initialization
-	//		void Start () {
-	//			shootCom = GetComponent<CompleteProject.PlayerShooting>();
-	//
-	//			Koreographer.Instance.RegisterForEvents("shoot", OnMusicalShoot);
-	//		}
-	//
-	//		void OnMusicalShoot (KoreographyEvent evt) {
-	//			if (Input.GetButton("Fire1") && Time.timeScale != 0f)
-	//			{
-	//				shootCom.Shoot();
-	//			}
-	//		}
-	//	}
+
 
 
 	public void SwitchWeapon (string weaponName)
@@ -133,7 +104,7 @@ public class Shooter : MonoBehaviour
 //		Vector3 rayOrigin = mainCam.ViewportToWorldPoint (new Vector3 (.5f, .5f, 0));
 		Vector3 rayOrigin = _reticle.transform.position;
 
-//		if (Input.GetButtonDown ("Fire1") && Time.time > _nextFireTime) {
+		if (Input.GetButtonDown ("Fire1") && Time.time > _nextFireTime) {
 
 			_nextFireTime = Time.time + _fireRate;
 
@@ -152,7 +123,7 @@ public class Shooter : MonoBehaviour
 				}
 			}
 			StartCoroutine (PistolShotEffectCoroutine ());
-//		}
+		}
 
 	}
 

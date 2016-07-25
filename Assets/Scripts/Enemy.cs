@@ -30,6 +30,7 @@ public class Enemy : MonoBehaviour
 	[SerializeField] protected Slider _healthSlider;
 	[SerializeField] protected CanvasGroup _healthSliderCanvasGroup;
 
+	[SerializeField] protected bool _hittable = true;
 	public bool stunned = false;
 	protected bool _targetSet = false;
 	[SerializeField] protected Color _origColor;
@@ -47,9 +48,9 @@ public class Enemy : MonoBehaviour
 		_deathExplosionPrefab.GetComponent<ParticleSystem> ().startColor = _origColor;
 		updateHealthBar ();
 
-		Koreographer.Instance.RegisterForEvents ("blink", OnMusicalBlink);
+//		Koreographer.Instance.RegisterForEvents ("blink", OnMusicalBlink);
 
-
+	
 	}
 
 	// Update is called once per frame
@@ -69,15 +70,21 @@ public class Enemy : MonoBehaviour
 
 	}
 
-	void OnMusicalBlink (KoreographyEvent evt) {
-		StartCoroutine(pulse ());
+	void OnMusicalBlink (KoreographyEvent evt)
+	{
+//		StartCoroutine (pulse ());
 	}
 
-	IEnumerator pulse() {
-		_renderer.material.color = _pulseColor;
-		yield return new WaitForSeconds (.1f);
-		LeanTween.color (gameObject, _origColor, .1f);
-	}
+//	IEnumerator pulse ()
+//	{
+////		_hittable = true;
+////		_renderer.material.color = _pulseColor;
+////		yield return new WaitForSeconds (.1f);
+////		LeanTween.color (gameObject, _origColor, .25f);
+////		yield return new WaitForSeconds (.25f);
+////		_hittable = false;
+//	
+//	}
 
 	public void initialize ()
 	{
@@ -157,15 +164,17 @@ public class Enemy : MonoBehaviour
 
 	public void takeDamage (int damage)
 	{
-		print (gameObject.name + " damage: " + damage);
-		StartCoroutine (showDamageColor ());
-		showDooberSplash (damage);
+		if (_hittable) {
+			print (gameObject.name + " damage: " + damage);
+			StartCoroutine (showDamageColor ());
+			showDooberSplash (damage);
 //		stunned = true;
-		_health -= damage;
-		print (gameObject.name + " health: " + _health);
-		updateHealthBar ();
-		if (_health <= 0) {
-			StartCoroutine (delayedDieCoroutine (true));
+			_health -= damage;
+			print (gameObject.name + " health: " + _health);
+			updateHealthBar ();
+			if (_health <= 0) {
+				StartCoroutine (delayedDieCoroutine (true));
+			}
 		}
 	}
 

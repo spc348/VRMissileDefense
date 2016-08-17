@@ -64,7 +64,7 @@ public class EnemyShip : MonoBehaviour
 			enemyGO.name = "Enemy" + i.ToString ();
 			enemyGO.transform.position = spawnPos;
 			enemyGO.transform.SetParent (_worldSpaceCanvas.transform);
-			Enemy enemy = enemyGO.GetComponent<Enemy> ();
+			OldEnemy enemy = enemyGO.GetComponent<OldEnemy> ();
 //			enemy.Target = enemyManager.targets [Random.Range (0, enemyManager.targets.Length)];
 
 			enemy.Target = enemyManager.targetManager.targetGOs [Random.Range (0, enemyManager.targetManager.targetGOs.Count)];

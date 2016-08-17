@@ -18,7 +18,7 @@ public class EnemyManager : MonoBehaviour
 
 	public GameObject[] targets;
 	[SerializeField] private List<EnemyShip> enemyShips = new List<EnemyShip> ();
-	public List<Enemy> enemies = new List<Enemy> ();
+	public List<OldEnemy> enemies = new List<OldEnemy> ();
 	[SerializeField] private GameObject[] _shipSpawnPoints;
 
 	[SerializeField] private TextMeshProUGUI _enemyCountText;

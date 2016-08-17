@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class SwarmEnemy : Enemy
+public class SwarmEnemy : OldEnemy
 {
 	public List<SwarmEnemy> enemiesInSwarm;
 

@@ -109,7 +109,7 @@ public class Shooter : MonoBehaviour
 			_nextFireTime = Time.time + _fireRate;
 
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
-				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
+				OldEnemy enemy = hit.collider.gameObject.GetComponent<OldEnemy> ();
 				if (enemy != null) {
 					enemy.takeDamage (10);
 

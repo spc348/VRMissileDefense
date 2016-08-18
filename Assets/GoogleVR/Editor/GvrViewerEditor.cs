@@ -16,7 +16,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
 #if UNITY_IOS
-using UnityEditor.iOS.Xcode;
+//using UnityEditor.iOS.Xcode;
 #endif
 
 /// A custom editor for properties on the GvrViewer script.  This appears in the
@@ -89,19 +89,19 @@ public class GvrViewerEditor : Editor {
 #if UNITY_IOS
   // Add -ObjC to the Xcode project's linker flags, since our native iOS code
   // requires it.  Also add required frameworks.
-  [PostProcessBuild(100)]
-  public static void OnPostProcessBuild(BuildTarget platform, string projectPath) {
-    if (platform != BuildTarget.iOS) {
-      return;
-    }
-    string pbxFile = PBXProject.GetPBXProjectPath(projectPath);
-    PBXProject pbxProject = new PBXProject();
-    pbxProject.ReadFromFile(pbxFile);
-    string target = pbxProject.TargetGuidByName(PBXProject.GetUnityTargetName());
-    pbxProject.AddFrameworkToProject(target, "Security.framework", false);
-    pbxProject.AddFrameworkToProject(target, "GLKit.framework", false);
-    pbxProject.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
-    pbxProject.WriteToFile(pbxFile);
-  }
+//  [PostProcessBuild(100)]
+//  public static void OnPostProcessBuild(BuildTarget platform, string projectPath) {
+//    if (platform != BuildTarget.iOS) {
+//      return;
+//    }
+//    string pbxFile = PBXProject.GetPBXProjectPath(projectPath);
+//    PBXProject pbxProject = new PBXProject();
+//    pbxProject.ReadFromFile(pbxFile);
+//    string target = pbxProject.TargetGuidByName(PBXProject.GetUnityTargetName());
+//    pbxProject.AddFrameworkToProject(target, "Security.framework", false);
+//    pbxProject.AddFrameworkToProject(target, "GLKit.framework", false);
+//    pbxProject.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
+//    pbxProject.WriteToFile(pbxFile);
+//  }
 #endif
 }

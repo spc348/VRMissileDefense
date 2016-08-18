@@ -39,7 +39,7 @@ public class RaycastShootScript : MonoBehaviour {
 
 			if (Physics.Raycast(rayOrigin, fpsCam.transform.forward, out hit, range))
 			{
-				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy>();
+				OldEnemy enemy = hit.collider.gameObject.GetComponent<OldEnemy>();
 				if (enemy != null)
 				{
 //					enemy.takeDamage(damage, hit.point);

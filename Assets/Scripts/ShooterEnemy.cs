@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ShooterEnemy : Enemy
+public class ShooterEnemy : OldEnemy
 {
 	[SerializeField] private ObjectPoolerScript _objectPoolerScript;
 	[SerializeField] private GameObject _projectileSpawnPos;

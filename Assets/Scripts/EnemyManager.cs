@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
-public class EnemyManager : MonoBehaviour
+public class EnemyManager : Singleton<EnemyManager>
 {
 
 	public int round = 1;
@@ -30,6 +30,8 @@ public class EnemyManager : MonoBehaviour
 	private List<EnemyShip> enemyShips = new List<EnemyShip> ();
 	public List <OldEnemy> enemies = new List<OldEnemy> ();
 
+	public List<Portal> portals = new List<Portal>();
+
 	void OnEnable ()
 	{
 		GameEventManager.StartListening ("CheckEnemyList", checkEnemyList);
@@ -46,10 +48,10 @@ public class EnemyManager : MonoBehaviour
 //		StartCoroutine (startNewRound ());
 //		_isFirstRound = false;
 
-		openPortals ();
+		StartCoroutine(openPortals ());
 	}
 
-	public void openPortals ()
+	IEnumerator openPortals ()
 	{
 		for (int i = 0; i < numPortals; i++) {
 
@@ -59,12 +61,15 @@ public class EnemyManager : MonoBehaviour
 			portal.SetActive (true);
 		}
 
+		yield return null;
+
+//		for (int i = 0; i < portals.Count; i++) {
+//			
+//		}
+
 	}
 
-	public void spawnEnemies ()
-	{
-//		StartCoroutine(spawnEnemiesCoroutine());
-	}
+
 
 	IEnumerator startNewRound ()
 	{

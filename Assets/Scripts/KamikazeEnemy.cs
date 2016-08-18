@@ -6,9 +6,7 @@ public class KamikazeEnemy : Enemy {
 	private bool _stunned;
 	private float _stunnedCountdown = 5f;
 	// Use this for initialization
-	void Start () {
-		_target = GameManager.Instance.player;
-	}
+
 	
 	// Update is called once per frame
 	void Update () {

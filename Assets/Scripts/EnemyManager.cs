@@ -8,8 +8,11 @@ public class EnemyManager : MonoBehaviour
 
 	public int round = 1;
 	private int numEnemies = 4;
+	private int numPortals = 4;
 	public TargetManager targetManager;
 
+	[SerializeField] private ObjectPoolerScript _portalPooler;
+	[SerializeField] private ObjectPoolerScript _kamikazeEnemyPooler;
 	[SerializeField] private ObjectPoolerScript _shipObjectPooler;
 	[SerializeField] private ObjectPoolerScript _swarmObjectPooler;
 
@@ -17,8 +20,6 @@ public class EnemyManager : MonoBehaviour
 
 
 	public GameObject[] targets;
-	[SerializeField] private List<EnemyShip> enemyShips = new List<EnemyShip> ();
-	public List<OldEnemy> enemies = new List<OldEnemy> ();
 	[SerializeField] private GameObject[] _shipSpawnPoints;
 
 	[SerializeField] private TextMeshProUGUI _enemyCountText;
@@ -26,13 +27,8 @@ public class EnemyManager : MonoBehaviour
 
 	private bool _isFirstRound = true;
 
-	//	public delegate void ClickAction ();
-	//
-	//	public static event ClickAction OnClicked;
-	//
-	//	public delegate void CheckEnemies ();
-	//
-	//	public static event CheckEnemies OnCheckEnemies;
+	private List<EnemyShip> enemyShips = new List<EnemyShip> ();
+	public List <OldEnemy> enemies = new List<OldEnemy> ();
 
 	void OnEnable ()
 	{
@@ -47,8 +43,22 @@ public class EnemyManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-		StartCoroutine (startNewRound ());
-		_isFirstRound = false;
+//		StartCoroutine (startNewRound ());
+//		_isFirstRound = false;
+
+		openPortals ();
+	}
+
+	public void openPortals ()
+	{
+		for (int i = 0; i < numPortals; i++) {
+
+			Vector3 spawnPos = new Vector3 (Random.Range (-600f, 600f), Random.Range (100, 1200f), Random.Range (-500f, -600f));
+			GameObject portal = _portalPooler.GetPooledObject ();
+			portal.transform.position = spawnPos;
+			portal.SetActive (true);
+		}
+
 	}
 
 	public void spawnEnemies ()
@@ -70,7 +80,7 @@ public class EnemyManager : MonoBehaviour
 		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
 
 		Vector3 swarmSpawnPos = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
-		GameObject swarm = _swarmObjectPooler.GetPooledObject();
+		GameObject swarm = _swarmObjectPooler.GetPooledObject ();
 		swarm.transform.position = swarmSpawnPos;
 		swarm.GetComponent<EnemySwarm> ().enemyManager = this;
 		swarm.SetActive (true);

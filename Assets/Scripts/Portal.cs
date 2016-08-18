@@ -20,7 +20,8 @@ public class Portal : MonoBehaviour
 	}
 
 	IEnumerator openCoroutine() {
-		LeanTween.scale (gameObject, Vector3.one * 20f, 5f).setEase (LeanTweenType.easeInOutExpo);
+		yield return new WaitForSeconds(2f);
+		LeanTween.scale (gameObject, Vector3.one * 10f, 5f).setEase (LeanTweenType.easeInOutExpo);
 		yield return new WaitForSeconds(5f);
 		StartCoroutine (spawnKamikazeEnemiesCoroutine (10));
 
@@ -37,6 +38,7 @@ public class Portal : MonoBehaviour
 		for (int i = 0; i < numEnemies; i++) {
 			GameObject kamikazeEnemy = _kamikazeEnemyPooler.GetPooledObject ();
 			kamikazeEnemy.transform.position = transform.position;
+			kamikazeEnemy.SetActive(true);
 			yield return new WaitForSeconds (.1f);
 		}
 	}

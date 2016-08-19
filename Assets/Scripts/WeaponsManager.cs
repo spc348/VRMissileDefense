@@ -27,8 +27,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	//Mortar
 	private bool _mortarPrimed = false;
 
-	//Pistol
-	[SerializeField] private GameObject _pistolFlare;
+	//MachineGun
 	//	[SerializeField] private LineRenderer _lineRenderer;
 	[SerializeField] private AudioClip _pistolFireClip;
 	public float _fireRate = .25f;
@@ -42,7 +41,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("mortar");
+		SwitchWeapon ("machineGun");
 
 	}
 	
@@ -64,7 +63,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			_reticleSpriteRenderer.sprite = crosshairMortar;
 			shootWeapon = ShootMortar;
 			break;
-		case "pistol":
+		case "machineGun":
 			_reticleSpriteRenderer.sprite = crosshairMachineGun;
 			shootWeapon = ShootMachineGun;
 			break;
@@ -98,8 +97,8 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		Vector3 rayOrigin = _reticle.transform.position;
 
 		if (Input.GetButton ("Fire1") && Time.time > _nextFireTime) {
-
 			_nextFireTime = Time.time + _fireRate;
+			_audSource.PlayOneShot (_pistolFireClip);
 
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
 				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
@@ -115,40 +114,24 @@ public class WeaponsManager : Singleton<WeaponsManager>
 					Instantiate (hitParticles, hit.point, Quaternion.identity);
 				}
 			}
-			_audSource.PlayOneShot (_pistolFireClip);
-
-//			StartCoroutine (PistolShotEffectCoroutine ());
 		}
 
 	}
 
 	public void ShootRocket ()
 	{
-
 		print ("shooting rocket");
 	}
-
-	IEnumerator PistolShotEffectCoroutine ()
-	{
-		_pistolFlare.gameObject.SetActive (true);
-		yield return new WaitForSeconds (.075f);
-		_audSource.PlayOneShot (_pistolFireClip);
-		_pistolFlare.gameObject.SetActive (false);
-	}
-
+		
 	public void increaseLootCount (int lootValue)
 	{
-
 		lootCount += lootValue;
 		_lootText.text = "LOOT: " + lootCount.ToString ();
-
 	}
 
 	public void decreaseLootCount (int lootValue)
 	{
-
 		lootCount -= lootValue;
 		_lootText.text = "LOOT: " + lootCount.ToString ();
-
 	}
 }

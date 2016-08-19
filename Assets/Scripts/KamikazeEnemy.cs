@@ -40,23 +40,14 @@ public class KamikazeEnemy : Enemy {
 
 	public override void move() {
 		if (_target != null) {
-
-
-//			transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.LookRotation (_target.transform.position - transform.position), _rotateSpeed * Time.deltaTime);
-//			_rb.AddForce(transform.forward * _moveSpeed);
-//			transform.position += transform.forward * _moveSpeed * Time.deltaTime;
 			_rb.velocity = transform.forward * _moveSpeed;
 			var targetRotation = Quaternion.LookRotation(_target.transform.position - transform.position);
+			_rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, _rotateSpeed));
 
-			_rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, 20));
-			//			Debug.DrawLine (transform.position, hit.point, Color.cyan);
-		
 		}
-//		else {
-//			print ("getting new target");
-//			_target = enemyManager.targetManager.targetGOs [Random.Range (0, enemyManager.targetManager.targetGOs.Count)];
-//
-//		}
+		else {
+			_target = TargetManager.Instance.getTarget();
+		}
 	}
 		
 	public override void attack() {

@@ -30,11 +30,23 @@ public abstract class Enemy : Entity {
 
 	// Use this for initialization
 	public virtual void Start () {
+		_moveSpeed = _moveSpeed * Time.deltaTime;
+		_rotateSpeed = _rotateSpeed * Time.deltaTime;
 		Target = TargetManager.Instance.getTarget();
 	}
 
 	public abstract void move ();
 	public abstract void attack ();
+
+	protected void OnCollisionEnter (Collision coll)
+	{
+		if (coll.gameObject.CompareTag ("Target")) {
+			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
+			StartCoroutine (die (false));
+
+		}
+
+	}
 
 	public void showDooberSplash (int amount)
 	{
@@ -46,11 +58,9 @@ public abstract class Enemy : Entity {
 	public void takeDamage (int damage)
 	{
 		if (_hittable) {
-			print (gameObject.name + " damage: " + damage);
 			StartCoroutine (showDamageColor ());
 			showDooberSplash (damage);
 			_health -= damage;
-			print (gameObject.name + " health: " + _health);
 //			updateHealthBar ();
 			if (_health <= 0) {
 				StartCoroutine (delayedDieCoroutine (true));

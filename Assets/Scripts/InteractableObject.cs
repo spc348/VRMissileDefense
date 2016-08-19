@@ -6,12 +6,12 @@ using System.Collections;
 public class InteractableObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler  {
 
 	protected GameObject _player;
-	protected Shooter _shooter;
+	protected WeaponsManager _shooter;
 
 	// Use this for initialization
 	public virtual void Start () {
 		_player = GameObject.Find ("Player");
-		_shooter = _player.GetComponent<Shooter> ();
+		_shooter = _player.GetComponent<WeaponsManager> ();
 	}
 	
 

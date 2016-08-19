@@ -5,7 +5,6 @@ using System.Collections;
 
 public class ButtonHelper : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
 
-	[SerializeField] private Shooter _shooter;
 	[SerializeField] private Tower _tower;
 	[SerializeField] private int _itemCost = 10;
 	private int _amountToHeal = 10;
@@ -23,8 +22,8 @@ public class ButtonHelper : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
 	public void purchaseItem() {
 
-		if (_shooter.lootCount >= _itemCost) {
-			_shooter.decreaseLootCount(_itemCost);
+		if (WeaponsManager.Instance.lootCount >= _itemCost) {
+			WeaponsManager.Instance.decreaseLootCount(_itemCost);
 			_tower.heal(_amountToHeal);
 		} else {
 			print ("not enough loot");
@@ -34,12 +33,12 @@ public class ButtonHelper : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 	public void OnPointerEnter(PointerEventData eventData)
 	{
 
-		_shooter.canShoot = false;
+		WeaponsManager.Instance.canShoot = false;
 	}
 
 	public void OnPointerExit(PointerEventData eventData)
 	{
-		_shooter.canShoot = true;
+		WeaponsManager.Instance.canShoot = true;
 
 	}
 

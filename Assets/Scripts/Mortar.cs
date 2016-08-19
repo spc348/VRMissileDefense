@@ -45,7 +45,7 @@ public class Mortar : MonoBehaviour
 				float distance = Vector3.Distance(gameObject.transform.position, enemyGO.transform.position);
 				float healthToTake = distance.Remap(0, explosionRadius, 0, 100);
 
-				enemyGO.GetComponent<OldEnemy>().takeDamage((int)healthToTake);
+				enemyGO.GetComponent<Enemy>().takeDamage((int)healthToTake);
 //				colliders [i].GetComponent<Enemy> ().Die ();
 //				colliders
 			}

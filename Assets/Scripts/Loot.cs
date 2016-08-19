@@ -23,7 +23,7 @@ public class Loot : MonoBehaviour
 		}
 
 		if (coll.gameObject.CompareTag ("Player")) {
-			coll.gameObject.GetComponent<Shooter>().increaseLootCount(1);
+			coll.gameObject.GetComponent<WeaponsManager>().increaseLootCount(1);
 
 			Destroy (gameObject);
 		}

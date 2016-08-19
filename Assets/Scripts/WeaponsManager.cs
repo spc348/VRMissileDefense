@@ -2,10 +2,9 @@
 using System.Collections;
 using Gvr.Internal;
 using TMPro;
-using SonicBloom.Koreo;
 
 
-public class Shooter : MonoBehaviour
+public class WeaponsManager : Singleton<WeaponsManager>
 {
 
 	[SerializeField] private AudioSource _audSource;
@@ -16,17 +15,17 @@ public class Shooter : MonoBehaviour
 	[SerializeField] private GameObject _mortarPrefab;
 	[SerializeField] private GameObject _spawnPos;
 	[SerializeField] private GameObject _reticle;
+	[SerializeField] private SpriteRenderer _reticleSpriteRenderer;
+
 	[SerializeField] private TextMeshProUGUI _lootText;
-
+	[SerializeField] private Sprite crosshairMachineGun;
+	[SerializeField] private Sprite crosshairMortar;
 	public bool canShoot = true;
-
 	delegate void ShootWeapon ();
-
 	ShootWeapon shootWeapon;
 
 	//Mortar
 	private bool _mortarPrimed = false;
-
 
 	//Pistol
 	[SerializeField] private GameObject _pistolFlare;
@@ -36,15 +35,14 @@ public class Shooter : MonoBehaviour
 	private float _nextFireTime;
 	public ParticleSystem smokeParticles;
 	public GameObject hitParticles;
-	public float range = 100050;
-	public float kEventCount = 0;
+	private float range = Mathf.Infinity;
 
 	public int lootCount = 0;
 
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("pistol");
+		SwitchWeapon ("mortar");
 
 	}
 	
@@ -63,10 +61,12 @@ public class Shooter : MonoBehaviour
 	{
 		switch (weaponName) {
 		case "mortar":
+			_reticleSpriteRenderer.sprite = crosshairMortar;
 			shootWeapon = ShootMortar;
 			break;
 		case "pistol":
-			shootWeapon = ShootPistol;
+			_reticleSpriteRenderer.sprite = crosshairMachineGun;
+			shootWeapon = ShootMachineGun;
 			break;
 		default:
 			break;
@@ -76,13 +76,10 @@ public class Shooter : MonoBehaviour
 
 	public void ShootMortar ()
 	{
-
 		if (GvrViewer.Instance.Triggered) {
-
-//			if (canShoot) {
 			if (!_mortarPrimed) {
-				GameObject fireworkGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
-				_mortar = fireworkGO.GetComponent<Mortar> ();
+				GameObject mortarGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
+				_mortar = mortarGO.GetComponent<Mortar> ();
 
 				Vector3 shootDir = (_reticle.transform.position - _spawnPos.transform.position).normalized;
 				_mortar.rb.AddForce (shootDir * 50f, ForceMode.Impulse);
@@ -91,25 +88,21 @@ public class Shooter : MonoBehaviour
 				_mortar.explode ();
 				_mortarPrimed = false;
 			}
-//			}
 		}
-
-
 	}
 
-	public void ShootPistol ()
+	public void ShootMachineGun ()
 	{
 
 		RaycastHit hit;
-//		Vector3 rayOrigin = mainCam.ViewportToWorldPoint (new Vector3 (.5f, .5f, 0));
 		Vector3 rayOrigin = _reticle.transform.position;
 
-		if (Input.GetButtonDown ("Fire1") && Time.time > _nextFireTime) {
+		if (Input.GetButton ("Fire1") && Time.time > _nextFireTime) {
 
 			_nextFireTime = Time.time + _fireRate;
 
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
-				OldEnemy enemy = hit.collider.gameObject.GetComponent<OldEnemy> ();
+				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
 				if (enemy != null) {
 					enemy.takeDamage (10);
 
@@ -122,7 +115,9 @@ public class Shooter : MonoBehaviour
 					Instantiate (hitParticles, hit.point, Quaternion.identity);
 				}
 			}
-			StartCoroutine (PistolShotEffectCoroutine ());
+			_audSource.PlayOneShot (_pistolFireClip);
+
+//			StartCoroutine (PistolShotEffectCoroutine ());
 		}
 
 	}

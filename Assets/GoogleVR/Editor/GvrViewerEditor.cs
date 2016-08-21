@@ -15,9 +15,8 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEditor.iOS;
 #if UNITY_IOS
-using UnityEngine.iOS.Xcode;
+using UnityEditor.iOS.Xcode;
 #endif
 
 /// A custom editor for properties on the GvrViewer script.  This appears in the
@@ -95,14 +94,14 @@ public class GvrViewerEditor : Editor {
     if (platform != BuildTarget.iOS) {
       return;
     }
-    string pbxFile = PBXProject.GetPBXProjectPath(projectPath);
-    PBXProject pbxProject = new PBXProject();
-    pbxProject.ReadFromFile(pbxFile);
-    string target = pbxProject.TargetGuidByName(PBXProject.GetUnityTargetName());
-    pbxProject.AddFrameworkToProject(target, "Security.framework", false);
-    pbxProject.AddFrameworkToProject(target, "GLKit.framework", false);
-    pbxProject.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
-    pbxProject.WriteToFile(pbxFile);
+//    string pbxFile = PBXProject.GetPBXProjectPath(projectPath);
+//    PBXProject pbxProject = new PBXProject();
+//    pbxProject.ReadFromFile(pbxFile);
+//    string target = pbxProject.TargetGuidByName(PBXProject.GetUnityTargetName());
+//    pbxProject.AddFrameworkToProject(target, "Security.framework", false);
+//    pbxProject.AddFrameworkToProject(target, "GLKit.framework", false);
+//    pbxProject.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
+//    pbxProject.WriteToFile(pbxFile);
   }
 #endif
 }

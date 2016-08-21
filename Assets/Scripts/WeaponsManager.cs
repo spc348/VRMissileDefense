@@ -28,7 +28,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	private bool _mortarPrimed = false;
 
 	//MachineGun
-	//	[SerializeField] private LineRenderer _lineRenderer;
+		[SerializeField] private LineRenderer _lineRenderer;
 	[SerializeField] private AudioClip _pistolFireClip;
 	public float _fireRate = .25f;
 	private float _nextFireTime;
@@ -111,6 +111,35 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 //				_lineRenderer.SetPosition(0, _reticle.transform.position);
 //				_lineRenderer.SetPosition(1, hit.point);
+					Instantiate (hitParticles, hit.point, Quaternion.identity);
+				}
+			}
+		}
+
+	}
+
+
+	public void ShootArcLightening ()
+	{
+
+		RaycastHit hit;
+		Vector3 rayOrigin = _reticle.transform.position;
+
+		if (Input.GetButton ("Fire1") && Time.time > _nextFireTime) {
+			_nextFireTime = Time.time + _fireRate;
+			_audSource.PlayOneShot (_pistolFireClip);
+
+			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
+				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
+				if (enemy != null) {
+					enemy.takeDamage (10);
+
+					if (hit.rigidbody != null) {
+						hit.rigidbody.AddForce (-hit.normal * 1f, ForceMode.Impulse);
+					}
+
+									_lineRenderer.SetPosition(0, _reticle.transform.position);
+									_lineRenderer.SetPosition(1, hit.point);
 					Instantiate (hitParticles, hit.point, Quaternion.identity);
 				}
 			}

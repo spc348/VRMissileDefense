@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
@@ -22,8 +22,8 @@ public class EnemyManager : Singleton<EnemyManager>
 	public GameObject[] targets;
 	[SerializeField] private GameObject[] _shipSpawnPoints;
 
-	[SerializeField] private TextMeshProUGUI _enemyCountText;
-	[SerializeField] private TextMeshProUGUI _roundText;
+//	[SerializeField] private TextMeshProUGUI _enemyCountText;
+//	[SerializeField] private TextMeshProUGUI _roundText;
 
 	private bool _isFirstRound = true;
 
@@ -71,34 +71,34 @@ public class EnemyManager : Singleton<EnemyManager>
 
 
 
-	IEnumerator startNewRound ()
-	{
-
-		yield return StartCoroutine (showRoundText ());
-		GameObject enemyShipGO = _shipObjectPooler.GetPooledObject ();
-		enemyShipGO.transform.position = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
-
-		EnemyShip enemyShip = enemyShipGO.GetComponent<EnemyShip> ();
-		enemyShips.Add (enemyShip);
-		enemyShipGO.SetActive (true);
-		enemyShip.enemyManager = this;
-		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
-
-		Vector3 swarmSpawnPos = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
-		GameObject swarm = _swarmObjectPooler.GetPooledObject ();
-		swarm.transform.position = swarmSpawnPos;
-		swarm.GetComponent<EnemySwarm> ().enemyManager = this;
-		swarm.SetActive (true);
-	}
+//	IEnumerator startNewRound ()
+//	{
+//
+//   	yield return StartCoroutine (showRoundText ());
+//		GameObject enemyShipGO = _shipObjectPooler.GetPooledObject ();
+//		enemyShipGO.transform.position = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
+//
+//		EnemyShip enemyShip = enemyShipGO.GetComponent<EnemyShip> ();
+//		enemyShips.Add (enemyShip);
+//		enemyShipGO.SetActive (true);
+//		enemyShip.enemyManager = this;
+//		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
+//
+//		Vector3 swarmSpawnPos = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
+//		GameObject swarm = _swarmObjectPooler.GetPooledObject ();
+//		swarm.transform.position = swarmSpawnPos;
+//		swarm.GetComponent<EnemySwarm> ().enemyManager = this;
+//		swarm.SetActive (true);
+//	}
 
 	void checkEnemyList ()
 	{
-		_enemyCountText.text = "ENEMIES: " + enemies.Count.ToString ();
+//		_enemyCountText.text = "ENEMIES: " + enemies.Count.ToString ();
 		if (allEnemiesDroppedOff ()) {
 			if (enemies.Count == 0) {
 				round++;
 				numEnemies *= 2;
-				StartCoroutine (startNewRound ());
+//				StartCoroutine (startNewRound ());
 			}
 		}
 	}
@@ -114,31 +114,31 @@ public class EnemyManager : Singleton<EnemyManager>
 		return allDroppedOff;
 	}
 
-	IEnumerator showRoundText ()
-	{
-
-		if (!_isFirstRound) {
-			_roundText.text = "Round Complete";
-			LeanTween.value (_roundText.gameObject, _roundText.color, Color.black, .5f).setOnUpdate ((Color _c) => {
-				_roundText.color = _c;
-			});
-		}
-		yield return new WaitForSeconds (2f);
-		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
-			_roundText.color = _c;
-		});
-		yield return new WaitForSeconds (1f);
-		_roundText.text = "Round " + round;
-		LeanTween.value (_roundText.gameObject, _roundText.color, Color.black, .5f).setOnUpdate ((Color _c) => {
-			_roundText.color = _c;
-		});
-
-		yield return new WaitForSeconds (2f);
-		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
-			_roundText.color = _c;
-		});
-
-		_enemyCountText.text = "ENEMIES: " + numEnemies;
-
-	}
+//	IEnumerator showRoundText ()
+//	{
+//
+//		if (!_isFirstRound) {
+////			_roundText.text = "Round Complete";
+////			LeanTween.value (_roundText.gameObject, _roundText.color, Color.black, .5f).setOnUpdate ((Color _c) => {
+//				_roundText.color = _c;
+//			});
+//		}
+//		yield return new WaitForSeconds (2f);
+////		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
+////			_roundText.color = _c;
+//		});
+//		yield return new WaitForSeconds (1f);
+//		_roundText.text = "Round " + round;
+//		LeanTween.value (_roundText.gameObject, _roundText.color, Color.black, .5f).setOnUpdate ((Color _c) => {
+//			_roundText.color = _c;
+//		});
+//
+//		yield return new WaitForSeconds (2f);
+//		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
+//			_roundText.color = _c;
+//		});
+//
+//		_enemyCountText.text = "ENEMIES: " + numEnemies;
+//
+//	}
 }

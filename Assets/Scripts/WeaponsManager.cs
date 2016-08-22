@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Gvr.Internal;
-using TMPro;
 
 
 public class WeaponsManager : Singleton<WeaponsManager>
@@ -17,7 +16,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	[SerializeField] private GameObject _reticle;
 	[SerializeField] private SpriteRenderer _reticleSpriteRenderer;
 
-	[SerializeField] private TextMeshProUGUI _lootText;
+//	[SerializeField] private TextMeshProUGUI _lootText;
 	[SerializeField] private Sprite crosshairMachineGun;
 	[SerializeField] private Sprite crosshairMortar;
 	public bool canShoot = true;
@@ -155,12 +154,12 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	public void increaseLootCount (int lootValue)
 	{
 		lootCount += lootValue;
-		_lootText.text = "LOOT: " + lootCount.ToString ();
+//		_lootText.text = "LOOT: " + lootCount.ToString ();
 	}
 
 	public void decreaseLootCount (int lootValue)
 	{
 		lootCount -= lootValue;
-		_lootText.text = "LOOT: " + lootCount.ToString ();
+//		_lootText.text = "LOOT: " + lootCount.ToString ();
 	}
 }

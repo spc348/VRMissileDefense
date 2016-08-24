@@ -141,15 +141,17 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			float distance = Vector3.Distance (_reticle.transform.position, _laserEnd.transform.position);
 			float step = distance / numTeslaPoint;
 			_lineRenderer.SetPosition (0, _reticle.transform.position - new Vector3 (0, 1));
-			_lineRenderer.SetPosition (numTeslaPoint, _laserEnd.transform.position);
-			for (int i = 1; i < numTeslaPoint; i++) {
-				float error1 = Random.Range (-.2f, .2f);
-				float error2 = Random.Range (-.2f, .2f);
-				float error3 = Random.Range (-.1f, .1f);
-//
-				_lineRenderer.SetPosition (i, _reticle.transform.position + (dir.normalized * i * step) + new Vector3 (error1, error2, error3));
-				
-			}
+						_lineRenderer.SetPosition (1, _laserEnd.transform.position);
+
+//			_lineRenderer.SetPosition (numTeslaPoint, _laserEnd.transform.position);
+//			for (int i = 1; i < numTeslaPoint; i++) {
+//				float error1 = Random.Range (-.2f, .2f);
+//				float error2 = Random.Range (-.2f, .2f);
+//				float error3 = Random.Range (-.1f, .1f);
+////
+//				_lineRenderer.SetPosition (i, _reticle.transform.position + (dir.normalized * i * step) + new Vector3 (error1, error2, error3));
+//				
+//			}
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
 				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
 				if (enemy != null) {

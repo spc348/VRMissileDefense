@@ -23,6 +23,10 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	[SerializeField] private Sprite crosshairMortar;
 	public bool canShoot = true;
 
+
+	public delegate void CancelTeslaEvent();
+	public static event CancelTeslaEvent OnCancelTesla;
+
 	delegate void ShootWeapon ();
 
 	ShootWeapon shootWeapon;
@@ -38,7 +42,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	public ParticleSystem smokeParticles;
 	public GameObject hitParticles;
 	private float range = Mathf.Infinity;
-	private int numLighteningPoint = 15;
+	private int numTeslaPoint = 49;
 
 	public int lootCount = 0;
 
@@ -130,19 +134,22 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		Vector3 rayOrigin = _reticle.transform.position;
 
 		if (Input.GetButton ("Fire1")) {
+			_lineRenderer.enabled = true;
 //			_nextFireTime = Time.time + _fireRate;
 
-//			Vector3 dir = _laserEnd.transform.position - _reticle.transform.position;
-//			_lineRenderer.SetPosition (0, _reticle.transform.position);
-//			_lineRenderer.SetPosition (numLighteningPoint, _laserEnd.transform.position);
-//			for (int i = 1; i < numLighteningPoint; i++) {
-//				float error1 = Random.Range (-1f, 1f);
-//				float error2 = Random.Range (-1f, 1f);
-//				float error3 = Random.Range (-1f, 1f);
+			Vector3 dir = _laserEnd.transform.position - _reticle.transform.position;
+			float distance = Vector3.Distance (_reticle.transform.position, _laserEnd.transform.position);
+			float step = distance / numTeslaPoint;
+			_lineRenderer.SetPosition (0, _reticle.transform.position - new Vector3 (0, 1));
+			_lineRenderer.SetPosition (numTeslaPoint, _laserEnd.transform.position);
+			for (int i = 1; i < numTeslaPoint; i++) {
+				float error1 = Random.Range (-.2f, .2f);
+				float error2 = Random.Range (-.2f, .2f);
+				float error3 = Random.Range (-.1f, .1f);
 //
-//				_lineRenderer.SetPosition (i, _reticle.transform.position + (dir.normalized * i*2) + new Vector3 (error1, error2, error3));
-//				
-//			}
+				_lineRenderer.SetPosition (i, _reticle.transform.position + (dir.normalized * i * step) + new Vector3 (error1, error2, error3));
+				
+			}
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
 				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
 				if (enemy != null) {
@@ -157,6 +164,9 @@ public class WeaponsManager : Singleton<WeaponsManager>
 //					Instantiate (hitParticles, hit.point, Quaternion.identity);
 				}
 			}
+		} else {
+			_lineRenderer.enabled = false;
+			OnCancelTesla();
 		}
 
 	}

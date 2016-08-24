@@ -28,9 +28,18 @@ public abstract class Enemy : Entity
 	[SerializeField] protected Color _teslaColor;
 	protected bool _hittable = true;
 	protected bool _targetSet = false;
+	protected bool _isTeslaing = true;
 	[SerializeField] protected float _moveSpeed = 8f;
 	[SerializeField] protected float _rotateSpeed = 10f;
 	[SerializeField] protected TeslaNode[] teslaNodes;
+
+	void OnEnable() {
+		WeaponsManager.OnCancelTesla += cancelTesla;
+	}
+
+	void OnDisable() {
+		WeaponsManager.OnCancelTesla -= cancelTesla;
+	}
 
 	// Use this for initialization
 	public virtual void Start ()
@@ -75,12 +84,18 @@ public abstract class Enemy : Entity
 //		_lineRenderer.SetPosition(0, transform.position);
 
 		if (teslaCount < 3) {
-			
 			for (int i = 0; i < colliders.Length; i++) {
 				teslaNodes [i].lineRenderer.SetPosition (0, transform.position);
 				teslaNodes [i].lineRenderer.SetPosition (1, colliders [i].transform.position);
-				colliders [i].GetComponent<Enemy> ().doTesla	(damage * .5f, teslaCount);
+				colliders [i].GetComponent<Enemy> ().doTesla (damage * .5f, teslaCount);
 			}
+		}
+	}
+
+	public void cancelTesla() {
+		for (int i = 0; i < teslaNodes.Length; i++) {
+			teslaNodes [i].lineRenderer.enabled = false;
+			_renderer.material.color = _origColor;
 		}
 	}
 

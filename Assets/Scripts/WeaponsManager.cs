@@ -24,7 +24,8 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	public bool canShoot = true;
 
 
-	public delegate void CancelTeslaEvent();
+	public delegate void CancelTeslaEvent ();
+
 	public static event CancelTeslaEvent OnCancelTesla;
 
 	delegate void ShootWeapon ();
@@ -141,7 +142,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			float distance = Vector3.Distance (_reticle.transform.position, _laserEnd.transform.position);
 			float step = distance / numTeslaPoint;
 			_lineRenderer.SetPosition (0, _reticle.transform.position - new Vector3 (0, 1));
-						_lineRenderer.SetPosition (1, _laserEnd.transform.position);
+			_lineRenderer.SetPosition (1, _laserEnd.transform.position);
 
 //			_lineRenderer.SetPosition (numTeslaPoint, _laserEnd.transform.position);
 //			for (int i = 1; i < numTeslaPoint; i++) {
@@ -164,11 +165,13 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 
 //					Instantiate (hitParticles, hit.point, Quaternion.identity);
-				}
+				} 
+			} else {
+				OnCancelTesla ();
 			}
 		} else {
 			_lineRenderer.enabled = false;
-			OnCancelTesla();
+			OnCancelTesla ();
 		}
 
 	}

@@ -1,15 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class UpgradesManager : MonoBehaviour {
+public class UpgradesManager : Singleton<UpgradesManager> {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+	public int numTeslaBranches = 2;
 }

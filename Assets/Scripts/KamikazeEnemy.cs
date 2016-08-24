@@ -10,7 +10,7 @@ public class KamikazeEnemy : Enemy {
 	
 	// Update is called once per frame
 	void Update () {
-		if (_targetSet) {
+//		if (_targetSet) {
 			if (!_stunned) {
 				move ();
 			} else {
@@ -20,7 +20,7 @@ public class KamikazeEnemy : Enemy {
 					_stunned = false;
 				}
 			}
-		}
+//		}
 	}
 
 	public void initialize ()
@@ -51,6 +51,16 @@ public class KamikazeEnemy : Enemy {
 	}
 		
 	public override void attack() {
+
+	}
+
+	protected void OnCollisionEnter (Collision coll)
+	{
+		if (coll.gameObject.CompareTag ("Target")) {
+			GameObject deathExplosion = Instantiate(_deathExplosionPrefab, coll.transform.position, Quaternion.identity) as GameObject;
+			gameObject.SetActive(false);
+			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
+		}
 
 	}
 }

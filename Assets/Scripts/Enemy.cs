@@ -28,9 +28,11 @@ public abstract class Enemy : Entity
 	protected bool _hittable = true;
 	protected bool _targetSet = false;
 	public bool isTeslaing = false;
+	private bool _gotTeslaColliders = false;
 	[SerializeField] protected float _moveSpeed = 8f;
 	[SerializeField] protected float _rotateSpeed = 10f;
 	[SerializeField] protected TeslaNode[] teslaNodes;
+	private Collider[] _teslaColliders;
 
 	void OnEnable ()
 	{
@@ -80,30 +82,33 @@ public abstract class Enemy : Entity
 	public void doTesla (float damage, int teslaCount)
 	{
 		isTeslaing = true;
-		teslaCount++;
 		_renderer.material.color = _teslaColor;
-		Collider[] colliders = Physics.OverlapSphere (transform.position, 120);
-//		_lineRenderer.SetPosition(0, transform.position);
-
-		if (teslaCount < 3) {
-			for (int i = 0; i < colliders.Length; i++) {
-				if (colliders [i].CompareTag ("Enemy")) {					print (colliders [i].gameObject.name);
-					if (!colliders [i].GetComponent<Enemy> ().isTeslaing) {
+		if (!_gotTeslaColliders) {
+			teslaCount++;
+			_teslaColliders = Physics.OverlapSphere (transform.position, 120);
+			_gotTeslaColliders = true;
+		}
+ 
+		print ("teslaing!!!");
+//		if (teslaCount < 3) {
+			for (int i = 0; i < UpgradesManager.Instance.numTeslaBranches; i++) {
+				if (_teslaColliders [i].CompareTag ("Enemy")) {					
+					if (!_teslaColliders [i].GetComponent<Enemy> ().isTeslaing) {
 						TeslaNode tnode = teslaNodes [i];
 						tnode.lineRenderer.enabled = true;
-
 						tnode.lineRenderer.SetPosition (0, transform.position);
-						tnode.lineRenderer.SetPosition (1, colliders [i].transform.position);
-						colliders [i].GetComponent<Enemy> ().doTesla (damage * .5f, teslaCount);
+						tnode.lineRenderer.SetPosition (1, _teslaColliders [i].transform.position);
+						_teslaColliders [i].GetComponent<Enemy> ().doTesla (damage * .5f, teslaCount);
 					}	
 				}
 			}
 
-		}
+//		}
 	}
 
 	public void cancelTesla ()
 	{
+		_gotTeslaColliders = false;
 		isTeslaing = false;
 		for (int i = 0; i < teslaNodes.Length; i++) {
 			teslaNodes [i].lineRenderer.enabled = false;

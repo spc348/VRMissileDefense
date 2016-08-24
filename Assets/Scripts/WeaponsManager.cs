@@ -154,8 +154,9 @@ public class WeaponsManager : Singleton<WeaponsManager>
 //				
 //			}
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
-				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
-				if (enemy != null) {
+				if (hit.collider.CompareTag ("Enemy")) {
+					
+					Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
 					enemy.doTesla (10, 0);
 //					enemy.takeDamage (10);
 //
@@ -165,12 +166,21 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 
 //					Instantiate (hitParticles, hit.point, Quaternion.identity);
-				} 
+				
+				}
 			} else {
-				OnCancelTesla ();
+				cancelTesla ();
 			}
 		} else {
 			_lineRenderer.enabled = false;
+			cancelTesla ();
+		}
+
+	}
+
+	void cancelTesla ()
+	{
+		if (OnCancelTesla != null) {
 			OnCancelTesla ();
 		}
 

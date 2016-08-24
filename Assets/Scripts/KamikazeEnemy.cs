@@ -46,11 +46,7 @@ public class KamikazeEnemy : Enemy {
 
 		}
 		else {
-			if (TargetManager.Instance.targetGOs.Count > 0) {
-				_target = TargetManager.Instance.getTarget ();
-			} else {
-				die (false);
-			}
+			tryGetTarget();
 		}
 	}
 		

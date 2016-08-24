@@ -5,6 +5,7 @@ public class Portal : MonoBehaviour
 {
 
 	[SerializeField] private ObjectPoolerScript _kamikazeEnemyPooler;
+	[SerializeField] private ObjectPoolerScript _airShooterEnemyPooler;
 
 	// Use this for initialization
 	void Start ()
@@ -45,6 +46,18 @@ public class Portal : MonoBehaviour
 		yield return new WaitForSeconds (1f);
 		close ();
 	}
+
+//	IEnumerator spawnShooterEnemiesCoroutine (int numEnemies)
+//	{
+//		for (int i = 0; i < numEnemies; i++) {
+//			GameObject kamikazeEnemy = _kamikazeEnemyPooler.GetPooledObject ();
+//			kamikazeEnemy.transform.position = transform.position;
+//			kamikazeEnemy.SetActive (true);
+//			yield return new WaitForSeconds (.1f);
+//		}
+//		yield return new WaitForSeconds (1f);
+//		close ();
+//	}
 
 
 	void close ()

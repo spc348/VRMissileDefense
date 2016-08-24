@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class Enemy : Entity {
+public abstract class Enemy : Entity
+{
 
 	[SerializeField] protected AudioSource _audSource;
 	[SerializeField] protected Collider _collider;
 	[SerializeField] protected Rigidbody _rb;
 	[SerializeField] protected Renderer _renderer;
+	[SerializeField] protected LineRenderer _lineRenderer;
 
 	public GameObject Target {
 		get { return _target; }
@@ -20,33 +22,30 @@ public abstract class Enemy : Entity {
 	[SerializeField] protected GameObject _dooberSplashPrefab;
 	[SerializeField] protected GameObject _deathExplosionPrefab;
 	[SerializeField] protected GameObject _lootPrefab;
+	[SerializeField] protected GameObject _teslaNodePrefab;
 
 	[SerializeField] protected Color _origColor;
-
+	[SerializeField] protected Color _teslaColor;
 	protected bool _hittable = true;
 	protected bool _targetSet = false;
 	[SerializeField] protected float _moveSpeed = 8f;
 	[SerializeField] protected float _rotateSpeed = 10f;
+	[SerializeField] protected TeslaNode[] teslaNodes;
 
 	// Use this for initialization
-	public virtual void Start () {
+	public virtual void Start ()
+	{
+		teslaNodes = GetComponentsInChildren<TeslaNode> ();
 		_moveSpeed = _moveSpeed * Time.deltaTime;
 		_rotateSpeed = _rotateSpeed * Time.deltaTime;
-		Target = TargetManager.Instance.getTarget();
+		tryGetTarget ();
 	}
 
 	public abstract void move ();
+
 	public abstract void attack ();
 
-	protected void OnCollisionEnter (Collision coll)
-	{
-		if (coll.gameObject.CompareTag ("Target")) {
-			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
-			StartCoroutine (die (false));
 
-		}
-
-	}
 
 	public void showDooberSplash (int amount)
 	{
@@ -67,6 +66,24 @@ public abstract class Enemy : Entity {
 			}
 		}
 	}
+
+	public void doTesla (float damage, int teslaCount)
+	{
+		teslaCount++;
+		_renderer.material.color = _teslaColor;
+		Collider[] colliders = Physics.OverlapSphere (transform.position, 120);
+//		_lineRenderer.SetPosition(0, transform.position);
+
+		if (teslaCount < 3) {
+			
+			for (int i = 0; i < colliders.Length; i++) {
+				teslaNodes [i].lineRenderer.SetPosition (0, transform.position);
+				teslaNodes [i].lineRenderer.SetPosition (1, colliders [i].transform.position);
+				colliders [i].GetComponent<Enemy> ().doTesla	(damage * .5f, teslaCount);
+			}
+		}
+	}
+
 	protected IEnumerator showDamageColor ()
 	{
 		_renderer.material.color = Color.red;
@@ -106,6 +123,16 @@ public abstract class Enemy : Entity {
 		gameObject.SetActive (false);
 //		enemyManager.enemies.Remove (this);
 //		GameEventManager.TriggerEvent ("CheckEnemyList");
+	
+	}
+
+	protected void tryGetTarget ()
+	{
+		if (TargetManager.Instance.targetGOs.Count > 0) {
+			_target = TargetManager.Instance.getTarget ();
+		} else {
+			die (false);
+		}
 	}
 
 	protected void releaseReward ()

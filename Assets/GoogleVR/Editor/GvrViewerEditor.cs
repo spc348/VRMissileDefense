@@ -94,14 +94,14 @@ public class GvrViewerEditor : Editor {
     if (platform != BuildTarget.iOS) {
       return;
     }
-//    string pbxFile = PBXProject.GetPBXProjectPath(projectPath);
-//    PBXProject pbxProject = new PBXProject();
-//    pbxProject.ReadFromFile(pbxFile);
-//    string target = pbxProject.TargetGuidByName(PBXProject.GetUnityTargetName());
-//    pbxProject.AddFrameworkToProject(target, "Security.framework", false);
-//    pbxProject.AddFrameworkToProject(target, "GLKit.framework", false);
-//    pbxProject.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
-//    pbxProject.WriteToFile(pbxFile);
+    string pbxFile = PBXProject.GetPBXProjectPath(projectPath);
+    PBXProject pbxProject = new PBXProject();
+    pbxProject.ReadFromFile(pbxFile);
+    string target = pbxProject.TargetGuidByName(PBXProject.GetUnityTargetName());
+    pbxProject.AddFrameworkToProject(target, "Security.framework", false);
+    pbxProject.AddFrameworkToProject(target, "GLKit.framework", false);
+    pbxProject.AddBuildProperty(target, "OTHER_LDFLAGS", "-ObjC");
+    pbxProject.WriteToFile(pbxFile);
   }
 #endif
 }

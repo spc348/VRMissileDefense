@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public abstract class Enemy : Entity
 {
@@ -33,6 +34,7 @@ public abstract class Enemy : Entity
 	[SerializeField] protected float _rotateSpeed = 10f;
 	[SerializeField] protected TeslaNode[] teslaNodes;
 	private Collider[] _teslaColliders;
+	private List<Enemy> _enemiesInTeslaRange = new List<Enemy> ();
 
 	void OnEnable ()
 	{
@@ -84,26 +86,38 @@ public abstract class Enemy : Entity
 		isTeslaing = true;
 		_renderer.material.color = _teslaColor;
 		if (!_gotTeslaColliders) {
-			teslaCount++;
 			_teslaColliders = Physics.OverlapSphere (transform.position, 120);
+		
+			_enemiesInTeslaRange.Clear ();
+			for (int i = 0; i < _teslaColliders.Length; i++) {
+				Collider tColl = _teslaColliders [i];
+				if (tColl.CompareTag ("Enemy")) {	
+					if (!tColl.GetComponent<Enemy> ().isTeslaing) {
+
+						_enemiesInTeslaRange.Add (tColl.GetComponent<Enemy> ());	
+					}
+				}
+			}
+			teslaCount++;
 			_gotTeslaColliders = true;
 		}
+
+		print (gameObject.name + "Enemies in range: " + _enemiesInTeslaRange.Count);
  
-		print ("teslaing!!!");
-//		if (teslaCount < 3) {
-			for (int i = 0; i < UpgradesManager.Instance.numTeslaBranches; i++) {
-				if (_teslaColliders [i].CompareTag ("Enemy")) {					
-					if (!_teslaColliders [i].GetComponent<Enemy> ().isTeslaing) {
+		if (teslaCount < 3) {
+			if (_enemiesInTeslaRange.Count > 0) {
+				for (int i = 0; i < _enemiesInTeslaRange.Count; i++) {
+					if (i < UpgradesManager.Instance.numTeslaBranches) {
+						Enemy enemy = _enemiesInTeslaRange [i];
 						TeslaNode tnode = teslaNodes [i];
 						tnode.lineRenderer.enabled = true;
 						tnode.lineRenderer.SetPosition (0, transform.position);
-						tnode.lineRenderer.SetPosition (1, _teslaColliders [i].transform.position);
-						_teslaColliders [i].GetComponent<Enemy> ().doTesla (damage * .5f, teslaCount);
-					}	
-				}
+						tnode.lineRenderer.SetPosition (1, enemy.transform.position);
+						enemy.doTesla (damage * .5f, teslaCount);
+					}
+				}	
 			}
-
-//		}
+		}
 	}
 
 	public void cancelTesla ()

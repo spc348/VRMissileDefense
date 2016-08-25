@@ -10,7 +10,6 @@ public class KamikazeEnemy : Enemy {
 	
 	// Update is called once per frame
 	void Update () {
-//		if (_targetSet) {
 			if (!_stunned) {
 				move ();
 			} else {
@@ -20,7 +19,7 @@ public class KamikazeEnemy : Enemy {
 					_stunned = false;
 				}
 			}
-//		}
+
 	}
 
 	public void initialize ()

@@ -102,7 +102,6 @@ public abstract class Enemy : Entity
 			_gotTeslaColliders = true;
 		}
 
-		print (gameObject.name + "Enemies in range: " + _enemiesInTeslaRange.Count);
  
 		if (teslaCount < 3) {
 			if (_enemiesInTeslaRange.Count > 0) {

@@ -9,7 +9,7 @@ public class UpgradesManager : Singleton<UpgradesManager> {
 	
 	private float minHeadLoweredTrigger = 50;
 	private float maxHeadLoweredTrigger = 90;
-	public int numTeslaBranches = 2;
+	public int numTeslaBranches = 1;
 
 
 

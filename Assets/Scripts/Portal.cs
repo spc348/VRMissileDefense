@@ -28,12 +28,7 @@ public class Portal : MonoBehaviour
 		StartCoroutine (spawnKamikazeEnemiesCoroutine (100));
 
 	}
-
-	//	public void spawnKamikazeEnemies (int numEnemies)
-	//	{
-	//
-	//		StartCoroutine (spawnKamikazeEnemiesCoroutine (numEnemies));
-	//	}
+		
 
 	IEnumerator spawnKamikazeEnemiesCoroutine (int numEnemies)
 	{

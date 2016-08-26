@@ -17,7 +17,7 @@ public class EnemyManager : Singleton<EnemyManager>
 	[SerializeField] private ObjectPoolerScript _swarmObjectPooler;
 
 	[SerializeField] private GameObject _enemyShipDestination;
-
+	[SerializeField] private GameObject _canvas;
 
 	public GameObject[] targets;
 	[SerializeField] private GameObject[] _shipSpawnPoints;
@@ -69,7 +69,9 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	}
 
-
+	public void setCanvasAsParent(GameObject go) {
+		go.transform.SetParent (_canvas.transform);
+	}
 
 //	IEnumerator startNewRound ()
 //	{

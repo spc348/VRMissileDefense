@@ -50,7 +50,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("arcLightening");
+		SwitchWeapon ("tesla");
 
 	}
 	
@@ -76,7 +76,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			_reticleSpriteRenderer.sprite = crosshairMachineGun;
 			shootWeapon = ShootMachineGun;
 			break;
-		case "arcLightening":
+		case "tesla":
 			_reticleSpriteRenderer.sprite = crosshairMachineGun;
 			shootWeapon = ShootArcLightening;
 			break;

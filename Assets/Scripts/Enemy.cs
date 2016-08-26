@@ -29,6 +29,7 @@ public abstract class Enemy : Entity
 	protected bool _hittable = true;
 	protected bool _targetSet = false;
 	public bool isTeslaing = false;
+	private bool _teslaCountIncremented = false;
 	private bool _gotTeslaColliders = false;
 	[SerializeField] protected float _moveSpeed = 8f;
 	[SerializeField] protected float _rotateSpeed = 10f;
@@ -61,15 +62,16 @@ public abstract class Enemy : Entity
 
 
 
-	public void showDooberSplash (int amount)
+	public void showDooberSplash (float amount)
 	{
 		GameObject dooberSplash = Instantiate (_dooberSplashPrefab, transform.position, Quaternion.identity) as GameObject;
 		dooberSplash.GetComponent<DooberSplash> ().setText (amount);
-		LeanTween.moveY (dooberSplash, transform.position.y + 5f, 1f).setEase (LeanTweenType.easeOutExpo);
+		LeanTween.moveY (dooberSplash, transform.position.y + 10f, 1.5f).setEase (LeanTweenType.easeOutExpo);
 	}
 
-	public void takeDamage (int damage)
+	public void takeDamage (float damage)
 	{
+		damage = Mathf.Round (damage);
 		if (_hittable) {
 			StartCoroutine (showDamageColor ());
 			showDooberSplash (damage);
@@ -85,6 +87,9 @@ public abstract class Enemy : Entity
 	{
 		isTeslaing = true;
 		_renderer.material.color = _teslaColor;
+
+		takeDamage (damage);
+
 		if (!_gotTeslaColliders) {
 			_teslaColliders = Physics.OverlapSphere (transform.position, 120);
 		
@@ -98,12 +103,12 @@ public abstract class Enemy : Entity
 					}
 				}
 			}
-			teslaCount++;
+			print (gameObject.name + " teslaCount: " + teslaCount);
 			_gotTeslaColliders = true;
 		}
 
  
-		if (teslaCount < 3) {
+		if (teslaCount < 2) {
 			if (_enemiesInTeslaRange.Count > 0) {
 				for (int i = 0; i < _enemiesInTeslaRange.Count; i++) {
 					if (i < UpgradesManager.Instance.numTeslaBranches) {
@@ -112,7 +117,7 @@ public abstract class Enemy : Entity
 						tnode.lineRenderer.enabled = true;
 						tnode.lineRenderer.SetPosition (0, transform.position);
 						tnode.lineRenderer.SetPosition (1, enemy.transform.position);
-						enemy.doTesla (damage * .5f, teslaCount);
+						enemy.doTesla (damage * .5f, ++teslaCount);
 					}
 				}	
 			}
@@ -121,7 +126,9 @@ public abstract class Enemy : Entity
 
 	public void cancelTesla ()
 	{
+		
 		_gotTeslaColliders = false;
+		_teslaCountIncremented = false;
 		isTeslaing = false;
 		for (int i = 0; i < teslaNodes.Length; i++) {
 			teslaNodes [i].lineRenderer.enabled = false;

@@ -10,15 +10,15 @@ public class KamikazeEnemy : Enemy {
 	
 	// Update is called once per frame
 	void Update () {
-			if (!_stunned) {
-				move ();
-			} else {
-				_stunnedCountdown -= Time.deltaTime;
-				if (_stunnedCountdown <= 0) {
-					_stunnedCountdown = 5f;
-					_stunned = false;
-				}
-			}
+//			if (!_stunned) {
+//				move ();
+//			} else {
+//				_stunnedCountdown -= Time.deltaTime;
+//				if (_stunnedCountdown <= 0) {
+//					_stunnedCountdown = 5f;
+//					_stunned = false;
+//				}
+//			}
 
 	}
 

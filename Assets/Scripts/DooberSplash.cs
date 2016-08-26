@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using TMPro;
 
 public class DooberSplash : MonoBehaviour
 {
 
-	[SerializeField] private Text _dooberText;
+	[SerializeField] private TextMeshPro _dooberText;
 
 	// Use this for initialization
 	void Start ()
@@ -34,9 +35,9 @@ public class DooberSplash : MonoBehaviour
 		Destroy (gameObject);
 	}
 
-	public void setText (int amount)
+	public void setText (float amount)
 	{
 		string prefix = "";
-//		_dooberText.text = amount.ToString ();
+		_dooberText.text = amount.ToString ();
 	}
 }

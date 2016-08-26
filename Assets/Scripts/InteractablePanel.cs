@@ -2,11 +2,12 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class WeaponsPanel : MonoBehaviour
+public class InteractablePanel : MonoBehaviour
 {
 
-	[SerializeField] CanvasGroup _canvasGroup;
+//	[SerializeField] CanvasGroup _canvasGroup;
 	private bool _isShowing = false;
+
 
 	// Use this for initialization
 	void Start ()
@@ -33,18 +34,18 @@ public class WeaponsPanel : MonoBehaviour
 	{
 		_isShowing = true;
 		LeanTween.scale (gameObject, Vector3.one, .1f);
-		LeanTween.value (gameObject, _canvasGroup.alpha, 1f, .2f).setOnUpdate ((float _a) => {
-			_canvasGroup.alpha = _a;
-		}).setEase(LeanTweenType.easeOutExpo); 
+//		LeanTween.value (gameObject, _canvasGroup.alpha, 1f, .2f).setOnUpdate ((float _a) => {
+//			_canvasGroup.alpha = _a;
+//		}).setEase(LeanTweenType.easeOutExpo); 
 	}
 
 	public void hide ()
 	{
 		_isShowing = false;
 		LeanTween.scale (gameObject, Vector3.zero, .1f);
-		LeanTween.value (gameObject, _canvasGroup.alpha, 0f, .2f).setOnUpdate ((float _a) => {
-			_canvasGroup.alpha = _a;
-		}); 
+//		LeanTween.value (gameObject, _canvasGroup.alpha, 0f, .2f).setOnUpdate ((float _a) => {
+//			_canvasGroup.alpha = _a;
+//		}); 
 	}
 }
 

@@ -103,7 +103,6 @@ public abstract class Enemy : Entity
 					}
 				}
 			}
-			print (gameObject.name + " teslaCount: " + teslaCount);
 			_gotTeslaColliders = true;
 		}
 

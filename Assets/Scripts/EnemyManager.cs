@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class EnemyManager : Singleton<EnemyManager>
 {
 
+	public int _totalEnemyPower;
 	public int round = 1;
 	private int numEnemies = 4;
 	private int numPortals = 4;
@@ -22,8 +23,12 @@ public class EnemyManager : Singleton<EnemyManager>
 	public GameObject[] targets;
 	[SerializeField] private GameObject[] _shipSpawnPoints;
 
-//	[SerializeField] private TextMeshProUGUI _enemyCountText;
-//	[SerializeField] private TextMeshProUGUI _roundText;
+
+	public enum EnemyType
+	{
+		KAMIKAZE,
+		SHOOTER
+	}
 
 	private bool _isFirstRound = true;
 
@@ -31,6 +36,7 @@ public class EnemyManager : Singleton<EnemyManager>
 	public List <OldEnemy> enemies = new List<OldEnemy> ();
 
 	public List<Portal> portals = new List<Portal>();
+	public List<Enemy> waveEnemies;
 
 	void OnEnable ()
 	{
@@ -48,7 +54,28 @@ public class EnemyManager : Singleton<EnemyManager>
 //		StartCoroutine (startNewRound ());
 //		_isFirstRound = false;
 
-		StartCoroutine(openPortals ());
+//		StartCoroutine(openPortals ());
+		beginWave();
+	}
+
+	void beginWave() {
+
+		for (int i = 0; i < 10; i++) {
+
+			spawnEnemy ("kamikaze");
+//			waveEnemies.Add (_kamikazeEnemyPooler.GetPooledObject ());		
+		}
+
+
+
+	}
+
+	void spawnEnemy(string enemyType) {
+		Vector3 spawnPos = new Vector3 (Random.Range (-600f, 600f), Random.Range (100, 1200f), Random.Range (-200f, -300f));
+		GameObject portal = _portalPooler.GetPooledObject ();
+		portal.transform.position = spawnPos;
+		portal.SetActive (true);
+		portal.GetComponent<Portal> ().open (enemyType);
 	}
 
 	IEnumerator openPortals ()

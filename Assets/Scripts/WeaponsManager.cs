@@ -19,8 +19,10 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 
 	//	[SerializeField] private TextMeshProUGUI _lootText;
-	[SerializeField] private Sprite crosshairMachineGun;
-	[SerializeField] private Sprite crosshairMortar;
+	[SerializeField] private Sprite _crosshairMachineGun;
+	[SerializeField] private Sprite _crosshairMortar;
+	[SerializeField] private Sprite _crosshairTesla;
+
 	public bool canShoot = true;
 
 
@@ -50,7 +52,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("tesla");
+		SwitchWeapon ("machineGun");
 
 	}
 	
@@ -69,15 +71,15 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	{
 		switch (weaponName) {
 		case "mortar":
-			_reticleSpriteRenderer.sprite = crosshairMortar;
+			_reticleSpriteRenderer.sprite = _crosshairMortar;
 			shootWeapon = ShootMortar;
 			break;
 		case "machineGun":
-			_reticleSpriteRenderer.sprite = crosshairMachineGun;
+			_reticleSpriteRenderer.sprite = _crosshairMachineGun;
 			shootWeapon = ShootMachineGun;
 			break;
 		case "tesla":
-			_reticleSpriteRenderer.sprite = crosshairMachineGun;
+			_reticleSpriteRenderer.sprite = _crosshairTesla;
 			shootWeapon = ShootArcLightening;
 			break;
 		default:

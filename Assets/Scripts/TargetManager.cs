@@ -18,7 +18,7 @@ public class TargetManager : Singleton<TargetManager>
 
 	void makeTargets ()
 	{
-		int numTargets = 3;
+		int numTargets = 10;
 		float range = 10f;
 
 		for (int i = 0; i < numTargets; i++) {

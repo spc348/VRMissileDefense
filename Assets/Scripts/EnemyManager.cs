@@ -31,6 +31,7 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	public List<Enemy> waveEnemies;
 	private List <EnemyType> _availableEnemyTypes = new List<EnemyType>();
+	public List<WaveData> _waveData = new List<WaveData>();
 
 	void OnEnable ()
 	{
@@ -55,19 +56,13 @@ public class EnemyManager : Singleton<EnemyManager>
 	}
 
 	void beginWave() {
-
-
 		//From a pool of possible enemies
 		//Grab 
 
 		for (int i = 0; i < 10; i++) {
-
 			StartCoroutine(spawnEnemy ());
 //			waveEnemies.Add (_kamikazeEnemyPooler.GetPooledObject ());		
 		}
-
-
-
 	}
 
 	IEnumerator spawnEnemy() {
@@ -107,7 +102,14 @@ public class EnemyManager : Singleton<EnemyManager>
 	}
 
 
+	void increaseNetEnemyPowerAndAddNewEnemies(int wave) {
+		
+	}
 
+	public class WaveData {
+//		public float powerIncrease = 10;
+//		public List
+	}
 
 	//	IEnumerator startNewRound ()
 	//	{

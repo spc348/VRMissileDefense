@@ -8,6 +8,11 @@ public class Portal : MonoBehaviour
 	[SerializeField] private ObjectPoolerScript _kamikazeEnemyPooler;
 	[SerializeField] private ObjectPoolerScript _airShooterEnemyPooler;
 
+	void OnEnable() {
+		open ();
+	}
+		
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -18,23 +23,26 @@ public class Portal : MonoBehaviour
 	}
 
 
-	public void open (string enemyType)
+
+
+	public void open ()
 	{
-		StartCoroutine (openCoroutine (enemyType));
+		StartCoroutine (openCoroutine ());
 	}
 
-	IEnumerator openCoroutine (string enemyType)
+	IEnumerator openCoroutine ()
 	{
-		yield return new WaitForSeconds (2f);
-		LeanTween.scale (gameObject, Vector3.one * 10f, 2f).setEase (LeanTweenType.easeInOutExpo);
+		LeanTween.scale (gameObject, Vector3.one * 5f, 1f).setEase (LeanTweenType.easeInOutExpo);
 		yield return new WaitForSeconds (1f);
 		close ();
 	}
 
 	void close ()
 	{
-		LeanTween.scale (gameObject, Vector3.zero * 10f, 5f).setEase (LeanTweenType.easeInOutExpo);
+		float timeToClose = 5f;
+		LeanTween.scale (gameObject, Vector3.zero, timeToClose).setEase (LeanTweenType.easeInOutExpo);
 	}
+
 
 
 	void initEnemyPoolDict ()

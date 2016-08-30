@@ -46,11 +46,14 @@ public abstract class Enemy : Entity
 	void OnDisable ()
 	{
 		WeaponsManager.OnCancelTesla -= cancelTesla;
+		_renderer.material.color = new Color (_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 0f);
 	}
 
 	// Use this for initialization
 	public virtual void Start ()
 	{
+		_renderer.material.color = new Color (_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 0f);
+
 		teslaNodes = GetComponentsInChildren<TeslaNode> ();
 		_moveSpeed = _moveSpeed * Time.deltaTime;
 		_rotateSpeed = _rotateSpeed * Time.deltaTime;
@@ -61,7 +64,9 @@ public abstract class Enemy : Entity
 
 	public abstract void attack ();
 
-
+	public void fadeIn() {
+		LeanTween.alpha (gameObject, 1, 5f);
+	}
 
 	public void showDooberSplash (float amount)
 	{

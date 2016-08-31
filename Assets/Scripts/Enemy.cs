@@ -41,6 +41,7 @@ public abstract class Enemy : Entity
 	void OnEnable ()
 	{
 		WeaponsManager.OnCancelTesla += cancelTesla;
+		_health = _origMaxHealth * EnemyManager.Instance.healthMultiplier;
 	}
 
 	void OnDisable ()

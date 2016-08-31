@@ -17,6 +17,9 @@ public class EnemyManager : Singleton<EnemyManager>
 	private int numPortals = 4;
 	public int damageMultiplier = 1;
 	public int healthMultiplier = 1;
+	private int _enemyPoints = 25;
+
+	int _debugEnemyCount;
 
 	public TargetManager targetManager;
 
@@ -28,21 +31,23 @@ public class EnemyManager : Singleton<EnemyManager>
 
 
 	public GameObject[] targets;
-	private List<EnemyType> _waveEnemyTypes;
+	private List<EnemyType> _waveEnemyTypes = new List<EnemyType> ();
 
-	private Dictionary<EnemyType, int> _enemyDictionary = new Dictionary<EnemyType, int> ();
+	private Dictionary<EnemyType, int> _enemyMarketDictionary = new Dictionary<EnemyType, int> ();
 	private Dictionary<EnemyType, ObjectPoolerScript> _enemyPoolerDict = new Dictionary<EnemyType, ObjectPoolerScript> ();
 
-	private int _enemyPoints = 5;
+	[SerializeField] private Slider _totalEnemyHealthSlider;
 
 	void OnEnable ()
 	{
 		GameEventManager.StartListening ("CheckEnemyList", checkEnemyList);
+		Enemy.OnTakeDamage += updateWaveHealthBar;
 	}
 
 	void OnDisable ()
 	{
 		GameEventManager.StopListening ("CheckEnemyList", checkEnemyList);
+		Enemy.OnTakeDamage += updateWaveHealthBar;
 	}
 
 
@@ -51,32 +56,41 @@ public class EnemyManager : Singleton<EnemyManager>
 	void Start ()
 	{	
 		initEnemyPoolerDictionary ();
-		initEnemyDictionary ();
+		initEnemyMarketDictionary ();
 		getEnemiesForRound ();
-		beginWave ();
+		StartCoroutine(beginWave ());
 	}
 
-	void beginWave ()
+	IEnumerator beginWave ()
 	{
+		_debugEnemyCount = 0;
 		for (int i = 0; i < _waveEnemyTypes.Count; i++) {
-			StartCoroutine (spawnEnemy (_waveEnemyTypes[i]));
+			spawnEnemy (_waveEnemyTypes [i]);	
+			yield return null;
 		}
-		_waveEnemyTypes.Clear ();
+
+		_totalEnemyHealthSlider.maxValue = _totalEnemyHealthForWave;
+		_totalEnemyHealthSlider.value = _totalEnemyHealthForWave;
+
 	}
 
-	IEnumerator spawnEnemy (EnemyType enemyType)
+	void spawnEnemy (EnemyType enemyType)
 	{
-		Vector3 spawnPos = new Vector3 (Random.Range (-600f, 600f), Random.Range (100, 1200f), Random.Range (-200f, -300f));
+		Vector3 spawnPos = new Vector3 (Random.Range (-600f, 600f), Random.Range (100, 600f), Random.Range (200f, 300f));
 		GameObject portal = _portalPooler.GetPooledObject ();
 		portal.transform.position = spawnPos;
 		portal.SetActive (true);
-		float portalOpenTime = 2f;
-		yield return new WaitForSeconds (portalOpenTime);
-		GameObject enemy = _enemyPoolerDict[enemyType].GetPooledObject ();
+//		float portalOpenTime = 1f;
+//		yield return new WaitForSeconds (portalOpenTime);
+
+		GameObject enemy = _enemyPoolerDict [enemyType].GetPooledObject ();
 		enemy.transform.position = portal.transform.position;
 		enemy.SetActive (true);
-		enemy.GetComponent<Enemy> ().fadeIn ();
 		_totalEnemyHealthForWave += enemy.GetComponent<Enemy> ().Health;
+		enemy.gameObject.name = "WaveEnemy" + _debugEnemyCount.ToString ();
+		enemy.GetComponent<Enemy> ().fadeIn ();
+
+
 	}
 
 
@@ -86,27 +100,30 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	void getEnemiesForRound ()
 	{
-		List<EnemyType> keyList = new List<EnemyType> (_enemyDictionary.Keys);
+		List<EnemyType> keyList = new List<EnemyType> (_enemyMarketDictionary.Keys);
 		while (_enemyPoints > 0) {
-			int index = Random.Range (0, _enemyDictionary.Count);
+			int index = Random.Range (0, _enemyMarketDictionary.Count);
 			EnemyType randomEnemy = keyList [index];
 			_waveEnemyTypes.Add (randomEnemy);
-			_enemyPoints--;
+			_enemyPoints -= _enemyMarketDictionary [randomEnemy];
 		}
 	}
 
-	public void initEnemyPoolerDictionary() {
+	public void initEnemyPoolerDictionary ()
+	{
 		_enemyPoolerDict.Add (EnemyType.KAMIKAZE, _kamikazeEnemyPooler);
 	}
 
-	public void initEnemyDictionary ()
+	public void initEnemyMarketDictionary ()
 	{
-		_enemyDictionary.Add (EnemyType.KAMIKAZE, 5);
+		_enemyMarketDictionary.Add (EnemyType.KAMIKAZE, 5);
 	}
 
 	public void endWave ()
 	{
-	
+		print ("Wave complete");
+//		_waveEnemyTypes.Clear ();
+
 	}
 
 	void adjustEnemyDicitonary (int wave)
@@ -118,14 +135,23 @@ public class EnemyManager : Singleton<EnemyManager>
 		case 1:
 			break;		
 		case 2:
-			_enemyDictionary.Add (EnemyType.SHOOTER, 10);
+			_enemyMarketDictionary.Add (EnemyType.SHOOTER, 5);
 			break;
 		case 3:
-			_enemyDictionary.Remove (EnemyType.KAMIKAZE);
+			_enemyMarketDictionary.Remove (EnemyType.KAMIKAZE);
 			break;
 		}
+	}
 
+	public void updateWaveHealthBar (float damage)
+	{
 
+		if (_totalEnemyHealthSlider.value - damage > 0) {
+			_totalEnemyHealthSlider.value -= damage;
+		} else {
+			_totalEnemyHealthSlider.value = 0;
+			endWave ();
+		}
 	}
 
 }

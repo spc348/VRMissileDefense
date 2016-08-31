@@ -7,7 +7,7 @@ public class Entity : MonoBehaviour {
 		get { return _health; }
 	}
 
-	protected float _origMaxHealth;
+	[SerializeField] protected float _origMaxHealth;
 	protected float _health;
 	protected int _strength;
 			

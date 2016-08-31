@@ -38,10 +38,15 @@ public abstract class Enemy : Entity
 	private Collider[] _teslaColliders;
 	private List<Enemy> _enemiesInTeslaRange = new List<Enemy> ();
 
+	public delegate void TakeDamageEvent(float damage);
+	public static event TakeDamageEvent OnTakeDamage;
+
+
 	void OnEnable ()
 	{
 		WeaponsManager.OnCancelTesla += cancelTesla;
 		_health = _origMaxHealth * EnemyManager.Instance.healthMultiplier;
+		_hittable = true;
 	}
 
 	void OnDisable ()
@@ -83,7 +88,8 @@ public abstract class Enemy : Entity
 			StartCoroutine (showDamageColor ());
 			showDooberSplash (damage);
 			_health -= damage;
-//			updateHealthBar ();
+			//improve this
+			OnTakeDamage (damage);;
 			if (_health <= 0) {
 				StartCoroutine (delayedDieCoroutine (true));
 			}
@@ -156,6 +162,7 @@ public abstract class Enemy : Entity
 
 	protected IEnumerator delayedDieCoroutine (bool killedByPlayer)
 	{
+		_hittable = false;
 		yield return new WaitForSeconds (.5f);
 		StartCoroutine (die (killedByPlayer));
 	}
@@ -174,6 +181,11 @@ public abstract class Enemy : Entity
 			releaseReward ();
 			if (r <= .25f) {
 			}
+		}
+
+		if (!killedByPlayer) {
+			//remove remaing health from bar
+			OnTakeDamage (_health);
 		}
 		yield return null;
 //		audSource.PlayOneShot (deathBoomClip);

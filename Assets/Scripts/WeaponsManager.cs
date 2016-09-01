@@ -118,7 +118,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
 				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
 				if (enemy != null) {
-					enemy.takeDamage (10);
+					enemy.takeDamage (UpgradesManager.Instance.machineGunStrength);
 
 					if (hit.rigidbody != null) {
 						hit.rigidbody.AddForce (-hit.normal * 1f, ForceMode.Impulse);

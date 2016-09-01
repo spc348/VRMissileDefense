@@ -7,6 +7,9 @@ public class KamikazeEnemy : Enemy {
 	private float _stunnedCountdown = 5f;
 	// Use this for initialization
 
+	void OnEnable() {
+		initialize ();
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -39,9 +42,9 @@ public class KamikazeEnemy : Enemy {
 
 	public override void move() {
 		if (_target != null) {
-			_rb.velocity = transform.forward * _moveSpeed;
+			_rb.velocity = transform.forward * _moveSpeed * Time.deltaTime;
 			var targetRotation = Quaternion.LookRotation(_target.transform.position - transform.position);
-			_rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, _rotateSpeed));
+			_rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, _rotateSpeed * Time.deltaTime));
 
 		}
 		else {
@@ -56,8 +59,7 @@ public class KamikazeEnemy : Enemy {
 	protected void OnCollisionEnter (Collision coll)
 	{
 		if (coll.gameObject.CompareTag ("Target")) {
-			GameObject deathExplosion = Instantiate(_deathExplosionPrefab, coll.transform.position, Quaternion.identity) as GameObject;
-			gameObject.SetActive(false);
+			StartCoroutine (die (false));
 			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
 		}
 

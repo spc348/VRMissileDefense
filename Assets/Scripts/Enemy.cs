@@ -61,8 +61,7 @@ public abstract class Enemy : Entity
 		_renderer.material.color = new Color (_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 0f);
 
 		teslaNodes = GetComponentsInChildren<TeslaNode> ();
-		_moveSpeed = _moveSpeed * Time.deltaTime;
-		_rotateSpeed = _rotateSpeed * Time.deltaTime;
+
 		tryGetTarget ();
 	}
 
@@ -86,14 +85,27 @@ public abstract class Enemy : Entity
 		damage = Mathf.Round (damage);
 		if (_hittable) {
 			StartCoroutine (showDamageColor ());
-			showDooberSplash (damage);
-			_health -= damage;
-			//improve this
-			OnTakeDamage (damage);;
+
+			float realDamage = getRealDamage (damage); 
+			showDooberSplash (realDamage);
+			_health -= realDamage;
+			OnTakeDamage (realDamage);;
 			if (_health <= 0) {
 				StartCoroutine (delayedDieCoroutine (true));
 			}
 		}
+	}
+
+	float getRealDamage(float damage) {
+	//apply damage
+		
+		float rDamage = 0;
+		if (_health - damage > 0) {
+			rDamage = damage;
+		} else {
+			rDamage = _health;
+		}
+		return rDamage;
 	}
 
 	public void doTesla (float damage, int teslaCount)
@@ -169,6 +181,7 @@ public abstract class Enemy : Entity
 
 	protected IEnumerator die (bool killedByPlayer)
 	{
+		print ("die");
 		_renderer.enabled = false;
 		_collider.enabled = false;
 //		_faceSpriteRenderer.enabled = false;

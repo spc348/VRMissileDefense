@@ -9,7 +9,6 @@ public abstract class Enemy : Entity
 	[SerializeField] protected Collider _collider;
 	[SerializeField] protected Rigidbody _rb;
 	[SerializeField] protected Renderer _renderer;
-	[SerializeField] protected LineRenderer _lineRenderer;
 
 	public GameObject Target {
 		get { return _target; }
@@ -33,7 +32,6 @@ public abstract class Enemy : Entity
 	private bool _gotTeslaColliders = false;
 	[SerializeField] protected float _moveSpeed = 8f;
 	[SerializeField] protected float _rotateSpeed = 10f;
-	public float power;
 	[SerializeField] protected TeslaNode[] teslaNodes;
 	private Collider[] _teslaColliders;
 	private List<Enemy> _enemiesInTeslaRange = new List<Enemy> ();
@@ -181,7 +179,6 @@ public abstract class Enemy : Entity
 
 	protected IEnumerator die (bool killedByPlayer)
 	{
-		print ("die");
 		_renderer.enabled = false;
 		_collider.enabled = false;
 //		_faceSpriteRenderer.enabled = false;

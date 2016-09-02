@@ -52,7 +52,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("machineGun");
+		SwitchWeapon ("mortar");
 
 	}
 	

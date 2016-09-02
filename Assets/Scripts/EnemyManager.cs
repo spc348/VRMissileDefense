@@ -20,6 +20,7 @@ public class EnemyManager : Singleton<EnemyManager>
 	private int numPortals = 4;
 	public int damageMultiplier = 1;
 	public int healthMultiplier = 1;
+	private int _startEnemyPoints = 25;
 	private int _enemyPoints = 25;
 
 	int _debugEnemyCount;
@@ -42,13 +43,11 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	void OnEnable ()
 	{
-		GameEventManager.StartListening ("CheckEnemyList", checkEnemyList);
 		Enemy.OnTakeDamage += updateWaveHealthBar;
 	}
 
 	void OnDisable ()
 	{
-		GameEventManager.StopListening ("CheckEnemyList", checkEnemyList);
 		Enemy.OnTakeDamage += updateWaveHealthBar;
 	}
 
@@ -98,13 +97,10 @@ public class EnemyManager : Singleton<EnemyManager>
 	}
 
 
-	void checkEnemyList ()
-	{
-	}
-
 	void getEnemiesForRound ()
 	{
 		List<EnemyType> keyList = new List<EnemyType> (_enemyMarketDictionary.Keys);
+		//This allows manager to overspend, should probably fix. 
 		while (_enemyPoints > 0) {
 			int index = Random.Range (0, _enemyMarketDictionary.Count);
 			EnemyType randomEnemy = keyList [index];
@@ -128,17 +124,16 @@ public class EnemyManager : Singleton<EnemyManager>
 	{
 		print ("Wave complete");
 		_waveEnemyTypes.Clear ();
+		_totalEnemyHealthForWave = 0;
 		adjustEnemyDicitonary (++_wave);
 
 		float timeTilNextRound = 1f;
-
 		while (timeTilNextRound > 0) {
 			timeTilNextRound -= Time.deltaTime;
 			_waveText.text = "NEXT WAVE IN: " + Mathf.Round (timeTilNextRound).ToString ();
 			yield return null;
 		}
 
-		yield return new WaitForSeconds (4f);
 
 
 		setWaveText ();
@@ -147,6 +142,11 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	void adjustEnemyDicitonary (int wave)
 	{
+		_enemyPoints =  _startEnemyPoints * Mathf.RoundToInt(Mathf.Pow(1.1f, (float)wave));
+		print ("EnemyPoints for wave: " + _enemyPoints);
+
+
+		//multiply by 1.1^wave
 		//scale monster health semi-exponentially
 		//scale monster damage output semi-logaritmically
 		switch (wave) {
@@ -154,11 +154,9 @@ public class EnemyManager : Singleton<EnemyManager>
 		case 1:
 			break;		
 		case 2:
-			_enemyPoints = 100;
 			_enemyMarketDictionary.Add (EnemyType.AIR_SHOOTER, 10);
 			break;
 		case 3:
-			_enemyPoints = 200;
 			_enemyMarketDictionary.Remove (EnemyType.KAMIKAZE);
 			break;
 		}

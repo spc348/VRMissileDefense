@@ -36,18 +36,18 @@ public abstract class Enemy : Entity
 	private Collider[] _teslaColliders;
 	private List<Enemy> _enemiesInTeslaRange = new List<Enemy> ();
 
-	public delegate void TakeDamageEvent(float damage);
+	public delegate void TakeDamageEvent (float damage);
+
 	public static event TakeDamageEvent OnTakeDamage;
 
 
-	void OnEnable ()
+	public virtual void OnEnable ()
 	{
 		WeaponsManager.OnCancelTesla += cancelTesla;
-		_health = _origMaxHealth * EnemyManager.Instance.healthMultiplier;
-		_hittable = true;
+		initialize();
 	}
 
-	void OnDisable ()
+	public virtual void OnDisable ()
 	{
 		WeaponsManager.OnCancelTesla -= cancelTesla;
 		_renderer.material.color = new Color (_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 0f);
@@ -67,7 +67,19 @@ public abstract class Enemy : Entity
 
 	public abstract void attack ();
 
-	public void fadeIn() {
+	public virtual void initialize ()
+	{
+		_hittable = true;
+		_renderer.material.color = _origColor;
+		_renderer.enabled = true;
+		_collider.enabled = true;
+		_health = _origMaxHealth * EnemyManager.Instance.healthMultiplier;
+		gameObject.SetActive (true);
+		_rb.velocity = Vector3.zero;
+	}
+
+	public void fadeIn ()
+	{
 		LeanTween.alpha (gameObject, 1, 5f);
 	}
 
@@ -87,15 +99,18 @@ public abstract class Enemy : Entity
 			float realDamage = getRealDamage (damage); 
 			showDooberSplash (realDamage);
 			_health -= realDamage;
-			OnTakeDamage (realDamage);;
+
+			OnTakeDamage (realDamage);
+			;
 			if (_health <= 0) {
 				StartCoroutine (delayedDieCoroutine (true));
 			}
 		}
 	}
 
-	float getRealDamage(float damage) {
-	//apply damage
+	float getRealDamage (float damage)
+	{
+		//apply damage
 		
 		float rDamage = 0;
 		if (_health - damage > 0) {
@@ -148,7 +163,6 @@ public abstract class Enemy : Entity
 
 	public void cancelTesla ()
 	{
-		
 		_gotTeslaColliders = false;
 		_teslaCountIncremented = false;
 		isTeslaing = false;

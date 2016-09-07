@@ -2,17 +2,11 @@
 using System.Collections;
 
 public class KamikazeEnemy : Enemy {
-
-	// Use this for initialization
-
-
 	
 	// Update is called once per frame
 	void Update () {
 		move ();
 	}
-
-
 
 	public override void move() {
 		if (_target != null) {
@@ -33,8 +27,8 @@ public class KamikazeEnemy : Enemy {
 	protected void OnCollisionEnter (Collision coll)
 	{
 		if (coll.gameObject.CompareTag ("Target")) {
-			StartCoroutine (die (false));
-			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
+			StartCoroutine (dieCoroutine (false));
+			coll.gameObject.GetComponent<Target> ().takeDamage (1);
 		}
 
 	}

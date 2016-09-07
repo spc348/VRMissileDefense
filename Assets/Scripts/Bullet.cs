@@ -17,7 +17,7 @@ public class Bullet : MonoBehaviour {
 		GameObject bulletExplosion = Instantiate(_bulletExplosion, coll.transform.position, Quaternion.identity) as GameObject;
 		gameObject.SetActive(false);
 		if (coll.gameObject.CompareTag ("Target")) {
-			coll.gameObject.GetComponent<Tower> ().takeDamage (1);
+			coll.gameObject.GetComponent<Target> ().takeDamage (1);
 		}
 
 	}

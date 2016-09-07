@@ -11,9 +11,11 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 	[SerializeField] private Camera mainCam;
 
+
 	[SerializeField] private GameObject _mortarPrefab;
 	[SerializeField] private GameObject _spawnPos;
 	[SerializeField] private GameObject _reticle;
+	[SerializeField] private GameObject _selectorReticle;
 	[SerializeField] private GameObject _laserEnd;
 	[SerializeField] private SpriteRenderer _reticleSpriteRenderer;
 
@@ -52,8 +54,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("mortar");
-
+		SwitchWeapon ("machineGun");
 	}
 	
 	// Update is called once per frame
@@ -63,9 +64,6 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			shootWeapon ();
 		}
 	}
-
-
-
 
 	public void SwitchWeapon (string weaponName)
 	{
@@ -80,7 +78,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			break;
 		case "tesla":
 			_reticleSpriteRenderer.sprite = _crosshairTesla;
-			shootWeapon = ShootArcLightening;
+			shootWeapon = ShootTesla;
 			break;
 		default:
 			break;
@@ -95,7 +93,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 				GameObject mortarGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
 				_mortar = mortarGO.GetComponent<Mortar> ();
 
-				Vector3 shootDir = (_reticle.transform.position - _spawnPos.transform.position).normalized;
+				Vector3 shootDir = (_laserEnd.transform.position - _reticle.transform.position).normalized;
 				_mortar.rb.AddForce (shootDir * 50f, ForceMode.Impulse);
 				_mortarPrimed = true;
 			} else {
@@ -130,7 +128,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	}
 
 
-	public void ShootArcLightening ()
+	public void ShootTesla ()
 	{
 
 		RaycastHit hit;
@@ -203,5 +201,17 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	{
 		lootCount -= lootValue;
 //		_lootText.text = "LOOT: " + lootCount.ToString ();
+	}
+
+	public void setReticleToSelector ()
+	{
+		_reticle.SetActive (false);
+		_selectorReticle.SetActive (true);
+	}
+
+	public void setReticleToCrosshair ()
+	{
+		_reticle.SetActive (true);
+		_selectorReticle.SetActive (false);
 	}
 }

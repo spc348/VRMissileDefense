@@ -8,9 +8,9 @@ public class TowerMovePos : InteractableObject {
 		GetComponent<Renderer>().material.color = gazedAt ? Color.green : Color.red;
 	}
 
-	public void flyPlayerToPos() {
-		LeanTween.move (_player, transform.position, 2f).setEase(LeanTweenType.easeOutExpo);
-	}
+//	public void flyPlayerToPos() {
+//		LeanTween.move (_player, transform.position, 2f).setEase(LeanTweenType.easeOutExpo);
+//	}
 
 	#region IGvrGazeResponder implementation
 

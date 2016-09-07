@@ -12,8 +12,9 @@ public class EnemyManager : Singleton<EnemyManager>
 	[SerializeField] private ObjectPoolerScript _airShooterEnemyPooler;
 
 	[SerializeField] private Text _waveText;
+	[SerializeField] private CanvasGroup _gameOverCanvasGroup;
 
-	private bool _isFirstRound = true;
+	private bool _gameOver = false;
 	public float _totalEnemyHealthForWave;
 	public int _wave = 1;
 	private int numEnemies = 4;
@@ -33,7 +34,6 @@ public class EnemyManager : Singleton<EnemyManager>
 		AIR_SHOOTER
 	}
 
-
 	private List<EnemyType> _waveEnemyTypes = new List<EnemyType> ();
 
 	private Dictionary<EnemyType, int> _enemyMarketDictionary = new Dictionary<EnemyType, int> ();
@@ -43,15 +43,15 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	void OnEnable ()
 	{
+		Target.OnGameOver += showGameOverMenu;
 		Enemy.OnTakeDamage += updateWaveHealthBar;
 	}
 
 	void OnDisable ()
 	{
+		Target.OnGameOver -= showGameOverMenu;
 		Enemy.OnTakeDamage += updateWaveHealthBar;
 	}
-
-
 
 	// Use this for initialization
 	void Start ()
@@ -63,9 +63,7 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	IEnumerator beginWave ()
 	{
-		print ("beginning wave: " + _wave);
 		getEnemiesForRound ();
-		print ("enemyTypesCount: " + _waveEnemyTypes.Count);
 
 		for (int i = 0; i < _waveEnemyTypes.Count; i++) {
 			spawnEnemy (_waveEnemyTypes [i]);	
@@ -76,7 +74,6 @@ public class EnemyManager : Singleton<EnemyManager>
 		LeanTween.value (_totalEnemyHealthSlider.gameObject, 0f, _totalEnemyHealthSlider.maxValue, 1f).setOnUpdate ((float _h) => {
 			_totalEnemyHealthSlider.value = _h;	
 		}); 
-//		 = _totalEnemyHealthForWave;
 
 	}
 
@@ -86,7 +83,6 @@ public class EnemyManager : Singleton<EnemyManager>
 		GameObject portal = _portalPooler.GetPooledObject ();
 		portal.transform.position = spawnPos;
 		portal.SetActive (true);
-
 
 		GameObject enemy = _enemyPoolerDict [enemyType].GetPooledObject ();
 		enemy.transform.position = portal.transform.position;
@@ -122,28 +118,24 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	IEnumerator endWave ()
 	{
-		print ("Wave complete");
 		_waveEnemyTypes.Clear ();
 		_totalEnemyHealthForWave = 0;
 		adjustEnemyDicitonary (++_wave);
 
-		float timeTilNextRound = 1f;
+		float timeTilNextRound = 5f;
 		while (timeTilNextRound > 0) {
 			timeTilNextRound -= Time.deltaTime;
 			_waveText.text = "NEXT WAVE IN: " + Mathf.Round (timeTilNextRound).ToString ();
 			yield return null;
 		}
-
-
-
+			
 		setWaveText ();
 		StartCoroutine (beginWave ());
 	}
 
 	void adjustEnemyDicitonary (int wave)
 	{
-		_enemyPoints =  _startEnemyPoints * Mathf.RoundToInt(Mathf.Pow(1.1f, (float)wave));
-		print ("EnemyPoints for wave: " + _enemyPoints);
+		_enemyPoints = Mathf.RoundToInt (_startEnemyPoints * Mathf.Pow (1.1f, (float)wave));
 
 
 		//multiply by 1.1^wave
@@ -151,20 +143,14 @@ public class EnemyManager : Singleton<EnemyManager>
 		//scale monster damage output semi-logaritmically
 		switch (wave) {
 
-		case 1:
-			break;		
-		case 2:
-			_enemyMarketDictionary.Add (EnemyType.AIR_SHOOTER, 10);
-			break;
 		case 3:
-			_enemyMarketDictionary.Remove (EnemyType.KAMIKAZE);
+			_enemyMarketDictionary.Add (EnemyType.AIR_SHOOTER, 10);
 			break;
 		}
 	}
 
 	public void updateWaveHealthBar (float damage)
 	{
-
 		if (_totalEnemyHealthSlider.value - damage > 0) {
 			_totalEnemyHealthSlider.value -= damage;
 		} else {
@@ -178,4 +164,13 @@ public class EnemyManager : Singleton<EnemyManager>
 		_waveText.text = "WAVE: " + _wave.ToString ();
 	}
 
+	public void showGameOverMenu ()
+	{
+		_gameOver = true;
+		_gameOverCanvasGroup.interactable = true;
+		_gameOverCanvasGroup.blocksRaycasts = true;
+		LeanTween.value (_gameOverCanvasGroup.gameObject, _gameOverCanvasGroup.alpha, 1f, 1f).setOnUpdate ((float _a) => {
+			_gameOverCanvasGroup.alpha = _a;
+		});	
+	}
 }

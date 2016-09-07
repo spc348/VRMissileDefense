@@ -10,7 +10,7 @@ public abstract class Enemy : Entity
 	[SerializeField] protected Rigidbody _rb;
 	[SerializeField] protected Renderer _renderer;
 
-	public GameObject Target {
+	public GameObject target {
 		get { return _target; }
 		set {
 			_target = value;
@@ -28,7 +28,7 @@ public abstract class Enemy : Entity
 	protected bool _hittable = true;
 	protected bool _targetSet = false;
 	public bool isTeslaing = false;
-	private bool _teslaCountIncremented = false;
+//	private bool _teslaCountIncremented = false;
 	private bool _gotTeslaColliders = false;
 	[SerializeField] protected float _moveSpeed = 8f;
 	[SerializeField] protected float _rotateSpeed = 10f;
@@ -43,12 +43,14 @@ public abstract class Enemy : Entity
 
 	public virtual void OnEnable ()
 	{
+		Target.OnGameOver += gameOverDie; 
 		WeaponsManager.OnCancelTesla += cancelTesla;
-		initialize();
+		initialize ();
 	}
 
 	public virtual void OnDisable ()
 	{
+		Target.OnGameOver -= gameOverDie;
 		WeaponsManager.OnCancelTesla -= cancelTesla;
 		_renderer.material.color = new Color (_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 0f);
 	}
@@ -57,9 +59,7 @@ public abstract class Enemy : Entity
 	public virtual void Start ()
 	{
 		_renderer.material.color = new Color (_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 0f);
-
 		teslaNodes = GetComponentsInChildren<TeslaNode> ();
-
 		tryGetTarget ();
 	}
 
@@ -164,7 +164,7 @@ public abstract class Enemy : Entity
 	public void cancelTesla ()
 	{
 		_gotTeslaColliders = false;
-		_teslaCountIncremented = false;
+//		_teslaCountIncremented = false;
 		isTeslaing = false;
 		for (int i = 0; i < teslaNodes.Length; i++) {
 			teslaNodes [i].lineRenderer.enabled = false;
@@ -179,6 +179,10 @@ public abstract class Enemy : Entity
 		_renderer.material.color = _origColor;
 	}
 
+	public void gameOverDie () {
+		StartCoroutine (dieCoroutine(false));
+	}
+
 	public void delayedDie (bool killedByPlayer)
 	{
 		StartCoroutine (delayedDieCoroutine (killedByPlayer));
@@ -188,10 +192,10 @@ public abstract class Enemy : Entity
 	{
 		_hittable = false;
 		yield return new WaitForSeconds (.5f);
-		StartCoroutine (die (killedByPlayer));
+		StartCoroutine (dieCoroutine (killedByPlayer));
 	}
 
-	protected IEnumerator die (bool killedByPlayer)
+	protected IEnumerator dieCoroutine (bool killedByPlayer)
 	{
 		_renderer.enabled = false;
 		_collider.enabled = false;
@@ -222,11 +226,11 @@ public abstract class Enemy : Entity
 
 	protected void tryGetTarget ()
 	{
-		if (TargetManager.Instance.targetGOs.Count > 0) {
+
 			_target = TargetManager.Instance.getTarget ();
-		} else {
-			die (false);
-		}
+//		} else {
+//			die (false);
+//		}
 	}
 
 	protected void releaseReward ()

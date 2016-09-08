@@ -5,6 +5,8 @@ using Gvr.Internal;
 
 public class WeaponsManager : Singleton<WeaponsManager>
 {
+	[SerializeField] private LockOnManager _lockOnManagerLeft;
+	[SerializeField] private LockOnManager _lockOnManagerRight;
 
 	[SerializeField] private AudioSource _audSource;
 	private Mortar _mortar;
@@ -54,7 +56,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("machineGun");
+		SwitchWeapon ("rocket");
 	}
 	
 	// Update is called once per frame
@@ -79,6 +81,10 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		case "tesla":
 			_reticleSpriteRenderer.sprite = _crosshairTesla;
 			shootWeapon = ShootTesla;
+			break;
+		case "rocket":
+			_reticleSpriteRenderer.sprite = _crosshairTesla;
+			shootWeapon = ShootRocket;
 			break;
 		default:
 			break;
@@ -188,7 +194,19 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 	public void ShootRocket ()
 	{
-		print ("shooting rocket");
+		RaycastHit hit;
+		Vector3 rayOrigin = _reticle.transform.position;
+
+		if (Input.GetButton ("Fire1")) {
+			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
+				if (hit.collider.CompareTag ("Enemy")) {
+//					Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
+					lockOnTarget(hit.collider.gameObject);
+//					print ("hit: " + hit.collider.gameObject.name);
+
+				}
+			}	
+		}
 	}
 
 	public void increaseLootCount (int lootValue)
@@ -213,5 +231,10 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	{
 		_reticle.SetActive (true);
 		_selectorReticle.SetActive (false);
+	}
+
+	public void lockOnTarget(GameObject target) {
+		_lockOnManagerLeft.lockOn (target);
+		_lockOnManagerRight.lockOn (target);
 	}
 }

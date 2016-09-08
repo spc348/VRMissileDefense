@@ -6,6 +6,7 @@ public class ObjectPoolerScript : MonoBehaviour
 {
 
 	//	public static ObjectPoolerScript current; //This was in the tutorial but I forget why. Why should this be static? Wouldn't you want to have multiple objectPoolers for different objects?
+	[SerializeField] private GameObject _objectParent;
 	public GameObject pooledObject;
 	public int pooledAmount = 20;
 	public bool willGrow = true;
@@ -20,7 +21,9 @@ public class ObjectPoolerScript : MonoBehaviour
 		pooledObjects = new List<GameObject> ();
 		for (int i = 0; i < pooledAmount; i++) {
 			GameObject obj = (GameObject)Instantiate (pooledObject);
-
+			if (_objectParent != null) {
+				obj.transform.SetParent (_objectParent.transform);
+			}
 			obj.SetActive (false);
 			pooledObjects.Add (obj);
 		}

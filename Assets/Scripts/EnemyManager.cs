@@ -5,142 +5,172 @@ using System.Collections.Generic;
 
 public class EnemyManager : Singleton<EnemyManager>
 {
-
-	public int round = 1;
-	private int numEnemies = 4;
-	private int numPortals = 4;
-	public TargetManager targetManager;
+	[SerializeField] private GameObject _canvas;
 
 	[SerializeField] private ObjectPoolerScript _portalPooler;
 	[SerializeField] private ObjectPoolerScript _kamikazeEnemyPooler;
-	[SerializeField] private ObjectPoolerScript _shipObjectPooler;
-	[SerializeField] private ObjectPoolerScript _swarmObjectPooler;
+	[SerializeField] private ObjectPoolerScript _airShooterEnemyPooler;
 
-	[SerializeField] private GameObject _enemyShipDestination;
-	[SerializeField] private GameObject _canvas;
+	[SerializeField] private Text _waveText;
+	[SerializeField] private CanvasGroup _gameOverCanvasGroup;
 
-	public GameObject[] targets;
-	[SerializeField] private GameObject[] _shipSpawnPoints;
+	private bool _gameOver = false;
+	public float _totalEnemyHealthForWave;
+	public int _wave = 1;
+	private int numEnemies = 4;
+	private int numPortals = 4;
+	public int damageMultiplier = 1;
+	public int healthMultiplier = 1;
+	private int _startEnemyPoints = 25;
+	private int _enemyPoints = 25;
 
-//	[SerializeField] private TextMeshProUGUI _enemyCountText;
-//	[SerializeField] private TextMeshProUGUI _roundText;
+	int _debugEnemyCount;
 
-	private bool _isFirstRound = true;
+	public TargetManager targetManager;
 
-	private List<EnemyShip> enemyShips = new List<EnemyShip> ();
-	public List <OldEnemy> enemies = new List<OldEnemy> ();
+	public enum EnemyType
+	{
+		KAMIKAZE,
+		AIR_SHOOTER
+	}
 
-	public List<Portal> portals = new List<Portal>();
+	private List<EnemyType> _waveEnemyTypes = new List<EnemyType> ();
+
+	private Dictionary<EnemyType, int> _enemyMarketDictionary = new Dictionary<EnemyType, int> ();
+	private Dictionary<EnemyType, ObjectPoolerScript> _enemyPoolerDict = new Dictionary<EnemyType, ObjectPoolerScript> ();
+
+	[SerializeField] private Slider _totalEnemyHealthSlider;
 
 	void OnEnable ()
 	{
-		GameEventManager.StartListening ("CheckEnemyList", checkEnemyList);
+		Target.OnGameOver += showGameOverMenu;
+		Enemy.OnTakeDamage += updateWaveHealthBar;
 	}
 
 	void OnDisable ()
 	{
-		GameEventManager.StopListening ("CheckEnemyList", checkEnemyList);
+		Target.OnGameOver -= showGameOverMenu;
+		Enemy.OnTakeDamage += updateWaveHealthBar;
 	}
 
 	// Use this for initialization
 	void Start ()
-	{
-//		StartCoroutine (startNewRound ());
-//		_isFirstRound = false;
-
-		StartCoroutine(openPortals ());
+	{	
+		initEnemyPoolerDictionary ();
+		initEnemyMarketDictionary ();
+		StartCoroutine (beginWave ());
 	}
 
-	IEnumerator openPortals ()
+	IEnumerator beginWave ()
 	{
-		for (int i = 0; i < numPortals; i++) {
+		getEnemiesForRound ();
 
-			Vector3 spawnPos = new Vector3 (Random.Range (-600f, 600f), Random.Range (100, 1200f), Random.Range (-500f, -600f));
-			GameObject portal = _portalPooler.GetPooledObject ();
-			portal.transform.position = spawnPos;
-			portal.SetActive (true);
+		for (int i = 0; i < _waveEnemyTypes.Count; i++) {
+			spawnEnemy (_waveEnemyTypes [i]);	
+			yield return null;
 		}
 
-		yield return null;
-
-//		for (int i = 0; i < portals.Count; i++) {
-//			
-//		}
+		_totalEnemyHealthSlider.maxValue = _totalEnemyHealthForWave;
+		LeanTween.value (_totalEnemyHealthSlider.gameObject, 0f, _totalEnemyHealthSlider.maxValue, 1f).setOnUpdate ((float _h) => {
+			_totalEnemyHealthSlider.value = _h;	
+		}); 
 
 	}
 
-	public void setCanvasAsParent(GameObject go) {
-		go.transform.SetParent (_canvas.transform);
-	}
-
-//	IEnumerator startNewRound ()
-//	{
-//
-//   	yield return StartCoroutine (showRoundText ());
-//		GameObject enemyShipGO = _shipObjectPooler.GetPooledObject ();
-//		enemyShipGO.transform.position = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
-//
-//		EnemyShip enemyShip = enemyShipGO.GetComponent<EnemyShip> ();
-//		enemyShips.Add (enemyShip);
-//		enemyShipGO.SetActive (true);
-//		enemyShip.enemyManager = this;
-//		enemyShip.moveToShipDestination (_enemyShipDestination, numEnemies);
-//
-//		Vector3 swarmSpawnPos = _shipSpawnPoints [Random.Range (0, _shipSpawnPoints.Length)].transform.position;
-//		GameObject swarm = _swarmObjectPooler.GetPooledObject ();
-//		swarm.transform.position = swarmSpawnPos;
-//		swarm.GetComponent<EnemySwarm> ().enemyManager = this;
-//		swarm.SetActive (true);
-//	}
-
-	void checkEnemyList ()
+	void spawnEnemy (EnemyType enemyType)
 	{
-//		_enemyCountText.text = "ENEMIES: " + enemies.Count.ToString ();
-		if (allEnemiesDroppedOff ()) {
-			if (enemies.Count == 0) {
-				round++;
-				numEnemies *= 2;
-//				StartCoroutine (startNewRound ());
-			}
+		Vector3 spawnPos = new Vector3 (Random.Range (-600f, 600f), Random.Range (100, 600f), Random.Range (200f, 300f));
+		GameObject portal = _portalPooler.GetPooledObject ();
+		portal.transform.position = spawnPos;
+		portal.SetActive (true);
+
+		GameObject enemy = _enemyPoolerDict [enemyType].GetPooledObject ();
+		enemy.transform.position = portal.transform.position;
+		enemy.SetActive (true);
+		_totalEnemyHealthForWave += enemy.GetComponent<Enemy> ().Health;
+		enemy.gameObject.name = "WaveEnemy";
+		enemy.GetComponent<Enemy> ().fadeIn ();
+	}
+
+
+	void getEnemiesForRound ()
+	{
+		List<EnemyType> keyList = new List<EnemyType> (_enemyMarketDictionary.Keys);
+		//This allows manager to overspend, should probably fix. 
+		while (_enemyPoints > 0) {
+			int index = Random.Range (0, _enemyMarketDictionary.Count);
+			EnemyType randomEnemy = keyList [index];
+			_waveEnemyTypes.Add (randomEnemy);
+			_enemyPoints -= _enemyMarketDictionary [randomEnemy];
 		}
 	}
 
-	bool allEnemiesDroppedOff ()
+	public void initEnemyPoolerDictionary ()
 	{
-		bool allDroppedOff = true;
-		for (int i = 0; i < enemyShips.Count; i++) {
-			if (!enemyShips [i].hasDroppedOffAllEnemies) {
-				allDroppedOff = false;
-			}
-		}
-		return allDroppedOff;
+		_enemyPoolerDict.Add (EnemyType.KAMIKAZE, _kamikazeEnemyPooler);
+		_enemyPoolerDict.Add (EnemyType.AIR_SHOOTER, _airShooterEnemyPooler);
 	}
 
-//	IEnumerator showRoundText ()
-//	{
-//
-//		if (!_isFirstRound) {
-////			_roundText.text = "Round Complete";
-////			LeanTween.value (_roundText.gameObject, _roundText.color, Color.black, .5f).setOnUpdate ((Color _c) => {
-//				_roundText.color = _c;
-//			});
-//		}
-//		yield return new WaitForSeconds (2f);
-////		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
-////			_roundText.color = _c;
-//		});
-//		yield return new WaitForSeconds (1f);
-//		_roundText.text = "Round " + round;
-//		LeanTween.value (_roundText.gameObject, _roundText.color, Color.black, .5f).setOnUpdate ((Color _c) => {
-//			_roundText.color = _c;
-//		});
-//
-//		yield return new WaitForSeconds (2f);
-//		LeanTween.value (_roundText.gameObject, _roundText.color, Color.clear, .5f).setOnUpdate ((Color _c) => {
-//			_roundText.color = _c;
-//		});
-//
-//		_enemyCountText.text = "ENEMIES: " + numEnemies;
-//
-//	}
+	public void initEnemyMarketDictionary ()
+	{
+		_enemyMarketDictionary.Add (EnemyType.KAMIKAZE, 5);
+	}
+
+	IEnumerator endWave ()
+	{
+		_waveEnemyTypes.Clear ();
+		_totalEnemyHealthForWave = 0;
+		adjustEnemyDicitonary (++_wave);
+
+		float timeTilNextRound = 5f;
+		while (timeTilNextRound > 0) {
+			timeTilNextRound -= Time.deltaTime;
+			_waveText.text = "NEXT WAVE IN: " + Mathf.Round (timeTilNextRound).ToString ();
+			yield return null;
+		}
+			
+		setWaveText ();
+		StartCoroutine (beginWave ());
+	}
+
+	void adjustEnemyDicitonary (int wave)
+	{
+		_enemyPoints = Mathf.RoundToInt (_startEnemyPoints * Mathf.Pow (1.1f, (float)wave));
+
+
+		//multiply by 1.1^wave
+		//scale monster health semi-exponentially
+		//scale monster damage output semi-logaritmically
+		switch (wave) {
+
+		case 3:
+			_enemyMarketDictionary.Add (EnemyType.AIR_SHOOTER, 10);
+			break;
+		}
+	}
+
+	public void updateWaveHealthBar (float damage)
+	{
+		if (_totalEnemyHealthSlider.value - damage > 0) {
+			_totalEnemyHealthSlider.value -= damage;
+		} else {
+			_totalEnemyHealthSlider.value = 0;
+			StartCoroutine (endWave ());
+		}
+	}
+
+	public void setWaveText ()
+	{
+		_waveText.text = "WAVE: " + _wave.ToString ();
+	}
+
+	public void showGameOverMenu ()
+	{
+		_gameOver = true;
+		_gameOverCanvasGroup.interactable = true;
+		_gameOverCanvasGroup.blocksRaycasts = true;
+		LeanTween.value (_gameOverCanvasGroup.gameObject, _gameOverCanvasGroup.alpha, 1f, 1f).setOnUpdate ((float _a) => {
+			_gameOverCanvasGroup.alpha = _a;
+		});	
+	}
 }

@@ -5,22 +5,28 @@ using Gvr.Internal;
 
 public class WeaponsManager : Singleton<WeaponsManager>
 {
+	[SerializeField] private LockOnManager _lockOnManagerLeft;
+	[SerializeField] private LockOnManager _lockOnManagerRight;
 
 	[SerializeField] private AudioSource _audSource;
 	private Mortar _mortar;
 
 	[SerializeField] private Camera mainCam;
 
+
 	[SerializeField] private GameObject _mortarPrefab;
 	[SerializeField] private GameObject _spawnPos;
 	[SerializeField] private GameObject _reticle;
+	[SerializeField] private GameObject _selectorReticle;
 	[SerializeField] private GameObject _laserEnd;
 	[SerializeField] private SpriteRenderer _reticleSpriteRenderer;
 
 
 	//	[SerializeField] private TextMeshProUGUI _lootText;
-	[SerializeField] private Sprite crosshairMachineGun;
-	[SerializeField] private Sprite crosshairMortar;
+	[SerializeField] private Sprite _crosshairMachineGun;
+	[SerializeField] private Sprite _crosshairMortar;
+	[SerializeField] private Sprite _crosshairTesla;
+
 	public bool canShoot = true;
 
 
@@ -50,8 +56,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("tesla");
-
+		SwitchWeapon ("rocket");
 	}
 	
 	// Update is called once per frame
@@ -62,23 +67,24 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		}
 	}
 
-
-
-
 	public void SwitchWeapon (string weaponName)
 	{
 		switch (weaponName) {
 		case "mortar":
-			_reticleSpriteRenderer.sprite = crosshairMortar;
+			_reticleSpriteRenderer.sprite = _crosshairMortar;
 			shootWeapon = ShootMortar;
 			break;
 		case "machineGun":
-			_reticleSpriteRenderer.sprite = crosshairMachineGun;
+			_reticleSpriteRenderer.sprite = _crosshairMachineGun;
 			shootWeapon = ShootMachineGun;
 			break;
 		case "tesla":
-			_reticleSpriteRenderer.sprite = crosshairMachineGun;
-			shootWeapon = ShootArcLightening;
+			_reticleSpriteRenderer.sprite = _crosshairTesla;
+			shootWeapon = ShootTesla;
+			break;
+		case "rocket":
+			_reticleSpriteRenderer.sprite = _crosshairTesla;
+			shootWeapon = ShootRocket;
 			break;
 		default:
 			break;
@@ -93,7 +99,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 				GameObject mortarGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
 				_mortar = mortarGO.GetComponent<Mortar> ();
 
-				Vector3 shootDir = (_reticle.transform.position - _spawnPos.transform.position).normalized;
+				Vector3 shootDir = (_laserEnd.transform.position - _reticle.transform.position).normalized;
 				_mortar.rb.AddForce (shootDir * 50f, ForceMode.Impulse);
 				_mortarPrimed = true;
 			} else {
@@ -116,7 +122,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
 				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
 				if (enemy != null) {
-					enemy.takeDamage (10);
+					enemy.takeDamage (UpgradesManager.Instance.machineGunStrength);
 
 					if (hit.rigidbody != null) {
 						hit.rigidbody.AddForce (-hit.normal * 1f, ForceMode.Impulse);
@@ -128,7 +134,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	}
 
 
-	public void ShootArcLightening ()
+	public void ShootTesla ()
 	{
 
 		RaycastHit hit;
@@ -188,7 +194,19 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 	public void ShootRocket ()
 	{
-		print ("shooting rocket");
+		RaycastHit hit;
+		Vector3 rayOrigin = _reticle.transform.position;
+
+		if (Input.GetButton ("Fire1")) {
+			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
+				if (hit.collider.CompareTag ("Enemy")) {
+//					Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
+					lockOnTarget(hit.collider.gameObject);
+//					print ("hit: " + hit.collider.gameObject.name);
+
+				}
+			}	
+		}
 	}
 
 	public void increaseLootCount (int lootValue)
@@ -201,5 +219,22 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	{
 		lootCount -= lootValue;
 //		_lootText.text = "LOOT: " + lootCount.ToString ();
+	}
+
+	public void setReticleToSelector ()
+	{
+		_reticle.SetActive (false);
+		_selectorReticle.SetActive (true);
+	}
+
+	public void setReticleToCrosshair ()
+	{
+		_reticle.SetActive (true);
+		_selectorReticle.SetActive (false);
+	}
+
+	public void lockOnTarget(GameObject target) {
+		_lockOnManagerLeft.lockOn (target);
+		_lockOnManagerRight.lockOn (target);
 	}
 }

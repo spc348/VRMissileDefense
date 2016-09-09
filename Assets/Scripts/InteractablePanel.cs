@@ -8,19 +8,6 @@ public class InteractablePanel : MonoBehaviour
 //	[SerializeField] CanvasGroup _canvasGroup;
 	private bool _isShowing = false;
 
-
-	// Use this for initialization
-	void Start ()
-	{
-	
-	}
-	
-	// Update is called once per frame
-	void Update ()
-	{
-	
-	}
-
 	public void toggleWeaponsPanel ()
 	{
 		if (!_isShowing) {

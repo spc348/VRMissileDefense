@@ -6,37 +6,47 @@ public class Rocket : MonoBehaviour
 	public GameObject _target;
 	[SerializeField] private GameObject _explosionParticlesPrefab;
 	[SerializeField] private Rigidbody _rb;
+	[SerializeField] private float _moveSpeed = 1000f;
+	[SerializeField] private float _rotateSpeed = 1000f;
 	private float _rotationSpeed = 10f;
-
 	// Use this for initialization
 
 	void Start ()
 	{
-		_target = GameObject.Find ("EnemyShip");
+		_target = GameObject.Find ("WaveEnemy");
 	}
 	
 	// Update is called once per frame
 	void Update ()
 	{
-		accelerateTowardEnemy ();
+		move ();
 	}
 
-	void rotateTowardEnemy (float rotateTime)
-	{
-		Vector3 direction = _target.transform.position - transform.position;
-		float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
-		Quaternion q = Quaternion.AngleAxis (angle, Vector3.forward);
-		direction = q.eulerAngles;
-		LeanTween.rotate (gameObject, direction, rotateTime); 
-	}
+	public void move() {
+		if (_target != null) {
+			_rb.velocity = transform.forward * _moveSpeed * Time.deltaTime;
+			var targetRotation = Quaternion.LookRotation(_target.transform.position - transform.position);
+			_rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, targetRotation, _rotateSpeed * Time.deltaTime));
 
-	void accelerateTowardEnemy ()
-	{
-		Vector3 direction = _target.transform.position - transform.position;
-		direction.Normalize ();
-		_rb.AddForce (direction * 6, ForceMode.Impulse);
-		transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.LookRotation (_target.transform.position - transform.position), _rotationSpeed * Time.fixedDeltaTime);
+		}
+	
 	}
+//	void rotateTowardEnemy (float rotateTime)
+//	{
+//		Vector3 direction = _target.transform.position - transform.position;
+//		float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
+//		Quaternion q = Quaternion.AngleAxis (angle, Vector3.forward);
+//		direction = q.eulerAngles;
+//		LeanTween.rotate (gameObject, direction, rotateTime); 
+//	}
+//
+//	void accelerateTowardEnemy ()
+//	{
+//		Vector3 direction = _target.transform.position - transform.position;
+//		direction.Normalize ();
+//		_rb.AddForce (direction * 6, ForceMode.Impulse);
+//		transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.LookRotation (_target.transform.position - transform.position), _rotationSpeed * Time.fixedDeltaTime);
+//	}
 
 	void explode ()
 	{

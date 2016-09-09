@@ -9,9 +9,8 @@ public abstract class Enemy : Entity
 	[SerializeField] protected Collider _collider;
 	[SerializeField] protected Rigidbody _rb;
 	[SerializeField] protected Renderer _renderer;
-	[SerializeField] protected LineRenderer _lineRenderer;
 
-	public GameObject Target {
+	public GameObject target {
 		get { return _target; }
 		set {
 			_target = value;
@@ -29,7 +28,7 @@ public abstract class Enemy : Entity
 	protected bool _hittable = true;
 	protected bool _targetSet = false;
 	public bool isTeslaing = false;
-	private bool _teslaCountIncremented = false;
+//	private bool _teslaCountIncremented = false;
 	private bool _gotTeslaColliders = false;
 	[SerializeField] protected float _moveSpeed = 8f;
 	[SerializeField] protected float _rotateSpeed = 10f;
@@ -37,22 +36,30 @@ public abstract class Enemy : Entity
 	private Collider[] _teslaColliders;
 	private List<Enemy> _enemiesInTeslaRange = new List<Enemy> ();
 
-	void OnEnable ()
+	public delegate void TakeDamageEvent (float damage);
+
+	public static event TakeDamageEvent OnTakeDamage;
+
+
+	public virtual void OnEnable ()
 	{
+		Target.OnGameOver += gameOverDie; 
 		WeaponsManager.OnCancelTesla += cancelTesla;
+		initialize ();
 	}
 
-	void OnDisable ()
+	public virtual void OnDisable ()
 	{
+		Target.OnGameOver -= gameOverDie;
 		WeaponsManager.OnCancelTesla -= cancelTesla;
+		_renderer.material.color = new Color (_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 0f);
 	}
 
 	// Use this for initialization
 	public virtual void Start ()
 	{
+		_renderer.material.color = new Color (_renderer.material.color.r, _renderer.material.color.g, _renderer.material.color.b, 0f);
 		teslaNodes = GetComponentsInChildren<TeslaNode> ();
-		_moveSpeed = _moveSpeed * Time.deltaTime;
-		_rotateSpeed = _rotateSpeed * Time.deltaTime;
 		tryGetTarget ();
 	}
 
@@ -60,7 +67,21 @@ public abstract class Enemy : Entity
 
 	public abstract void attack ();
 
+	public virtual void initialize ()
+	{
+		_hittable = true;
+		_renderer.material.color = _origColor;
+		_renderer.enabled = true;
+		_collider.enabled = true;
+		_health = _origMaxHealth * EnemyManager.Instance.healthMultiplier;
+		gameObject.SetActive (true);
+		_rb.velocity = Vector3.zero;
+	}
 
+	public void fadeIn ()
+	{
+		LeanTween.alpha (gameObject, 1, 5f);
+	}
 
 	public void showDooberSplash (float amount)
 	{
@@ -74,13 +95,30 @@ public abstract class Enemy : Entity
 		damage = Mathf.Round (damage);
 		if (_hittable) {
 			StartCoroutine (showDamageColor ());
-			showDooberSplash (damage);
-			_health -= damage;
-//			updateHealthBar ();
+
+			float realDamage = getRealDamage (damage); 
+			showDooberSplash (realDamage);
+			_health -= realDamage;
+
+			OnTakeDamage (realDamage);
+			;
 			if (_health <= 0) {
 				StartCoroutine (delayedDieCoroutine (true));
 			}
 		}
+	}
+
+	float getRealDamage (float damage)
+	{
+		//apply damage
+		
+		float rDamage = 0;
+		if (_health - damage > 0) {
+			rDamage = damage;
+		} else {
+			rDamage = _health;
+		}
+		return rDamage;
 	}
 
 	public void doTesla (float damage, int teslaCount)
@@ -125,9 +163,8 @@ public abstract class Enemy : Entity
 
 	public void cancelTesla ()
 	{
-		
 		_gotTeslaColliders = false;
-		_teslaCountIncremented = false;
+//		_teslaCountIncremented = false;
 		isTeslaing = false;
 		for (int i = 0; i < teslaNodes.Length; i++) {
 			teslaNodes [i].lineRenderer.enabled = false;
@@ -142,6 +179,10 @@ public abstract class Enemy : Entity
 		_renderer.material.color = _origColor;
 	}
 
+	public void gameOverDie () {
+		StartCoroutine (dieCoroutine(false));
+	}
+
 	public void delayedDie (bool killedByPlayer)
 	{
 		StartCoroutine (delayedDieCoroutine (killedByPlayer));
@@ -149,11 +190,12 @@ public abstract class Enemy : Entity
 
 	protected IEnumerator delayedDieCoroutine (bool killedByPlayer)
 	{
+		_hittable = false;
 		yield return new WaitForSeconds (.5f);
-		StartCoroutine (die (killedByPlayer));
+		StartCoroutine (dieCoroutine (killedByPlayer));
 	}
 
-	protected IEnumerator die (bool killedByPlayer)
+	protected IEnumerator dieCoroutine (bool killedByPlayer)
 	{
 		_renderer.enabled = false;
 		_collider.enabled = false;
@@ -168,6 +210,11 @@ public abstract class Enemy : Entity
 			if (r <= .25f) {
 			}
 		}
+
+		if (!killedByPlayer) {
+			//remove remaing health from bar
+			OnTakeDamage (_health);
+		}
 		yield return null;
 //		audSource.PlayOneShot (deathBoomClip);
 //		yield return new WaitForSeconds (deathBoomClip.length);
@@ -179,11 +226,11 @@ public abstract class Enemy : Entity
 
 	protected void tryGetTarget ()
 	{
-		if (TargetManager.Instance.targetGOs.Count > 0) {
+
 			_target = TargetManager.Instance.getTarget ();
-		} else {
-			die (false);
-		}
+//		} else {
+//			die (false);
+//		}
 	}
 
 	protected void releaseReward ()

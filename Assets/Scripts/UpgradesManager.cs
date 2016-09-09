@@ -4,8 +4,10 @@ using System.Collections;
 
 public class UpgradesManager : Singleton<UpgradesManager> {
 
-	public int numTeslaBranches = 1;
 	private bool _isShowing;
+
+	public float machineGunStrength = 1;
+	public int numTeslaBranches = 1;
 
 
 }

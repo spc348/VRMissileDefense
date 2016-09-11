@@ -5,6 +5,8 @@ using Gvr.Internal;
 
 public class WeaponsManager : Singleton<WeaponsManager>
 {
+
+	[SerializeField] private ObjectPoolerScript _rocketPooler;
 	[SerializeField] private LockOnManager _lockOnManagerLeft;
 	[SerializeField] private LockOnManager _lockOnManagerRight;
 
@@ -50,6 +52,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	public GameObject hitParticles;
 	private float range = Mathf.Infinity;
 	private int numTeslaPoint = 49;
+	public bool isLockedOn = false;
 
 	public int lootCount = 0;
 
@@ -201,11 +204,17 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
 				if (hit.collider.CompareTag ("Enemy")) {
 //					Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
-					lockOnTarget(hit.collider.gameObject);
-//					print ("hit: " + hit.collider.gameObject.name);
+					lockOnTarget (hit.collider.gameObject);
+					print ("hit: " + hit.collider.gameObject.name);
 
 				}
 			}	
+		} else {
+			if (isLockedOn) {
+				print ("FIRING ZE MISSILE");
+				isLockedOn = false;
+			}
+			cancelLockOn();
 		}
 	}
 
@@ -233,8 +242,15 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		_selectorReticle.SetActive (false);
 	}
 
-	public void lockOnTarget(GameObject target) {
-		_lockOnManagerLeft.lockOn (target);
-		_lockOnManagerRight.lockOn (target);
+	void lockOnTarget (GameObject target)
+	{
+		_lockOnManagerLeft.startLockOnProcess (target);
+		_lockOnManagerRight.startLockOnProcess (target);
+	}
+
+	void cancelLockOn ()
+	{
+		_lockOnManagerLeft.endLockOnProcess ();
+		_lockOnManagerRight.endLockOnProcess ();
 	}
 }

@@ -9,5 +9,6 @@ public class UpgradesManager : Singleton<UpgradesManager> {
 	public float machineGunStrength = 1;
 	public int numTeslaBranches = 1;
 
+	public float rocketLockOnSpeed = 3f;
 
 }

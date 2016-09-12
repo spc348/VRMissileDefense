@@ -1,19 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.SceneManagement;
-public class GameOverMenu : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+public class GameOverMenu : MonoBehaviour
+{
 	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+	[SerializeField] private GameObject WeaponsManager;
+	[SerializeField] private GameObject UpgradesManager;
+	[SerializeField] private GameObject EnemyManager;
+	[SerializeField] private GameObject TargetManager;
 
-	public void loadStartScene() {
-		SceneManager.LoadScene("StartScene");
+	public void loadStartScene ()
+	{
+//		Destroy (WeaponsManager);
+//		Destroy (UpgradesManager);
+//		Destroy (EnemyManager);
+//		Destroy (TargetManager);
+		SceneManager.LoadScene ("StartScene");
 	}
 }

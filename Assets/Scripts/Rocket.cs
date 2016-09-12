@@ -18,7 +18,6 @@ public class Rocket : MonoBehaviour
 	void Start ()
 	{
 		_origParticleEmissionRate = _rocketTrailParticles.emission.rate.constantMax;
-		print ("orig: " + _origParticleEmissionRate);
 	}
 
 	void OnEnable ()
@@ -71,7 +70,6 @@ public class Rocket : MonoBehaviour
 
 	void OnCollisionEnter (Collision coll)
 	{
-		print ("rocketHitting:   " + coll.gameObject.name);
 		if (coll.gameObject.CompareTag ("Enemy")) {
 			explode ();
 			coll.gameObject.GetComponent<Enemy> ().takeDamage (UpgradesManager.Instance.rocketStrength);

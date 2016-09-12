@@ -101,7 +101,7 @@ public abstract class Enemy : Entity
 			_health -= realDamage;
 
 			OnTakeDamage (realDamage);
-			;
+
 			if (_health <= 0) {
 				StartCoroutine (delayedDieCoroutine (true));
 			}

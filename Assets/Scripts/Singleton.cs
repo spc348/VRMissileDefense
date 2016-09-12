@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 {
+//	public bool DestroyOnLoad = true;
 	private static T _instance;
 
 	public static T Instance
@@ -31,7 +32,9 @@ public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
 		if (_instance == null)
 		{
 			_instance = this as T;
-			DontDestroyOnLoad(gameObject);
+//			if (!DestroyOnLoad) {
+//				DontDestroyOnLoad (gameObject);
+//			}
 		}
 		else
 		{

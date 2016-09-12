@@ -50,7 +50,7 @@ public class EnemyManager : Singleton<EnemyManager>
 	void OnDisable ()
 	{
 		Target.OnGameOver -= showGameOverMenu;
-		Enemy.OnTakeDamage += updateWaveHealthBar;
+		Enemy.OnTakeDamage -= updateWaveHealthBar;
 	}
 
 	// Use this for initialization

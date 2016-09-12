@@ -11,14 +11,23 @@ public class Rocket : MonoBehaviour
 	[SerializeField] private ParticleSystem _rocketTrailParticles;
 	[SerializeField] private float _moveSpeed = 1000f;
 	[SerializeField] private float _rotateSpeed = 1000f;
-
+	private float _origParticleEmissionRate;
 	private bool _isAlive = true;
 	// Use this for initialization
 
+	void Start ()
+	{
+		_origParticleEmissionRate = _rocketTrailParticles.emission.rate.constantMax;
+		print ("orig: " + _origParticleEmissionRate);
+	}
+
 	void OnEnable ()
 	{
-		
-//		_rb.isKinematic = false;
+		_renderer.enabled = true;
+		_collider.enabled = true;
+		_rb.isKinematic = false;
+		_rocketTrailParticles.EnableEmission(true);
+		_isAlive = true;
 	}
 	
 	// Update is called once per frame
@@ -40,41 +49,29 @@ public class Rocket : MonoBehaviour
 		}
 	
 	}
-	//	void rotateTowardEnemy (float rotateTime)
-	//	{
-	//		Vector3 direction = _target.transform.position - transform.position;
-	//		float angle = Mathf.Atan2 (direction.y, direction.x) * Mathf.Rad2Deg;
-	//		Quaternion q = Quaternion.AngleAxis (angle, Vector3.forward);
-	//		direction = q.eulerAngles;
-	//		LeanTween.rotate (gameObject, direction, rotateTime);
-	//	}
-	//
-	//	void accelerateTowardEnemy ()
-	//	{
-	//		Vector3 direction = _target.transform.position - transform.position;
-	//		direction.Normalize ();
-	//		_rb.AddForce (direction * 6, ForceMode.Impulse);
-	//		transform.rotation = Quaternion.Slerp (transform.rotation, Quaternion.LookRotation (_target.transform.position - transform.position), _rotationSpeed * Time.fixedDeltaTime);
-	//	}
 
 	void explode ()
 	{
+		_rocketTrailParticles.EnableEmission (false);
 		GameObject exp = Instantiate (_explosionParticlesPrefab, transform.position, Quaternion.identity) as GameObject;
-		DetachParticles();
-		gameObject.SetActive(false);
-//		StartCoroutine (delayedDeactivate ());
+		_isAlive = false;
+		_renderer.enabled = false;
+		_collider.enabled = false;
+		_rb.isKinematic = true;
+
+		//		gameObject.SetActive(false);
+		StartCoroutine (delayedDeactivate ());
 	}
 
-//	IEnumerator delayedDeactivate ()
-//	{
-//		yield return new WaitForSeconds (_rocketTrailParticles.startLifetime);
-//		gameObject.SetActive (false);
-//	}
-//
+	IEnumerator delayedDeactivate ()
+	{
+		yield return new WaitForSeconds (_rocketTrailParticles.startLifetime);
+		gameObject.SetActive (false);
+	}
+
 	void OnCollisionEnter (Collision coll)
 	{
 		print ("rocketHitting:   " + coll.gameObject.name);
-
 		if (coll.gameObject.CompareTag ("Enemy")) {
 			explode ();
 			coll.gameObject.GetComponent<Enemy> ().takeDamage (UpgradesManager.Instance.rocketStrength);
@@ -82,18 +79,10 @@ public class Rocket : MonoBehaviour
 		}
 	}
 
-	public void DetachParticles()
-	{
-		// This splits the particle off so it doesn't get deleted with the parent
-		_rocketTrailParticles.transform.parent = null;
-
-		// this stops the particle from creating more bits
-//		ParticleSystemEmissionType emission = new ParticleSystemEmissionType();
-//		emission.rate = 0;
-//		_rocketTrailParticles.emission.rate = emission;
-
-		// This finds the particleAnimator associated with the emitter and then
-		// sets it to automatically delete itself when it runs out of particles
-		_rocketTrailParticles.GetComponent<ParticleAnimator>().autodestruct = true;
-	}
+	//	public void DetachParticles()
+	//	{
+	//		_rocketTrailParticles.transform.parent = null;
+	//		Destroy (_rocketTrailParticles,
+	//
+	//	}
 }

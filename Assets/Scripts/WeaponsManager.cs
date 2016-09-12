@@ -61,7 +61,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	// Use this for initialization
 	void Start ()
 	{
-		SwitchWeapon ("rocket");
+		SwitchWeapon ("machineGun");
 	}
 	
 	// Update is called once per frame

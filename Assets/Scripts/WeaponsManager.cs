@@ -21,6 +21,8 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	[SerializeField] private GameObject _reticle;
 	[SerializeField] private GameObject _selectorReticle;
 	[SerializeField] private GameObject _laserEnd;
+	private GameObject _rocketTarget;
+
 	[SerializeField] private SpriteRenderer _reticleSpriteRenderer;
 
 
@@ -199,23 +201,28 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	{
 		RaycastHit hit;
 		Vector3 rayOrigin = _reticle.transform.position;
-
 		if (Input.GetButton ("Fire1")) {
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
 				if (hit.collider.CompareTag ("Enemy")) {
-//					Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
-					lockOnTarget (hit.collider.gameObject);
-					print ("hit: " + hit.collider.gameObject.name);
-
+					_rocketTarget = hit.collider.gameObject;
+					lockOnTarget (_rocketTarget);
 				}
 			}	
 		} else {
 			if (isLockedOn) {
-				print ("FIRING ZE MISSILE");
+				launchRocket (_rocketTarget);
 				isLockedOn = false;
 			}
-			cancelLockOn();
+			cancelLockOn ();
 		}
+	}
+
+	void launchRocket (GameObject target)
+	{
+		GameObject rocket = _rocketPooler.GetPooledObject ();
+		rocket.transform.position = _reticle.transform.position;
+		rocket.GetComponent<Rocket> ().target = target;
+		rocket.SetActive (true);
 	}
 
 	public void increaseLootCount (int lootValue)

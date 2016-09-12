@@ -118,19 +118,24 @@ public class EnemyManager : Singleton<EnemyManager>
 
 	IEnumerator endWave ()
 	{
-		_waveEnemyTypes.Clear ();
-		_totalEnemyHealthForWave = 0;
-		adjustEnemyDicitonary (++_wave);
 
-		float timeTilNextRound = 5f;
-		while (timeTilNextRound > 0) {
-			timeTilNextRound -= Time.deltaTime;
-			_waveText.text = "NEXT WAVE IN: " + Mathf.Round (timeTilNextRound).ToString ();
-			yield return null;
-		}
+		if (!_gameOver) {
+			_waveEnemyTypes.Clear ();
+			_totalEnemyHealthForWave = 0;
+			adjustEnemyDicitonary (++_wave);
+
+			float timeTilNextRound = 5f;
+			while (timeTilNextRound > 0) {
+				timeTilNextRound -= Time.deltaTime;
+				_waveText.text = "NEXT WAVE IN: " + Mathf.Round (timeTilNextRound).ToString ();
+				yield return null;
+			}
 			
-		setWaveText ();
-		StartCoroutine (beginWave ());
+			setWaveText ();
+			StartCoroutine (beginWave ());
+		} else {
+			_waveText.text = "GAME OVER";
+		}
 	}
 
 	void adjustEnemyDicitonary (int wave)

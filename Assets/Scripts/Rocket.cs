@@ -3,6 +3,9 @@ using System.Collections;
 
 public class Rocket : MonoBehaviour
 {
+	[SerializeField] private AudioSource _audSource;
+	[SerializeField] private AudioClip _launchSFX;
+	[SerializeField] private AudioClip _explodeSFX;
 	[HideInInspector] public GameObject target;
 	[SerializeField] private Renderer _renderer;
 	[SerializeField] private Collider _collider;
@@ -27,6 +30,7 @@ public class Rocket : MonoBehaviour
 		_rb.isKinematic = false;
 		_rocketTrailParticles.EnableEmission(true);
 		_isAlive = true;
+		_audSource.PlayOneShot (_launchSFX);
 	}
 	
 	// Update is called once per frame
@@ -51,6 +55,7 @@ public class Rocket : MonoBehaviour
 
 	void explode ()
 	{
+		_audSource.PlayOneShot (_explodeSFX);
 		_rocketTrailParticles.EnableEmission (false);
 		GameObject exp = Instantiate (_explosionParticlesPrefab, transform.position, Quaternion.identity) as GameObject;
 		_isAlive = false;

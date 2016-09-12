@@ -11,6 +11,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	[SerializeField] private LockOnManager _lockOnManagerRight;
 
 	[SerializeField] private AudioSource _audSource;
+
 	private Mortar _mortar;
 
 	[SerializeField] private Camera mainCam;
@@ -21,6 +22,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	[SerializeField] private GameObject _reticle;
 	[SerializeField] private GameObject _selectorReticle;
 	[SerializeField] private GameObject _laserEnd;
+	[SerializeField] private GameObject _rocketLaunchPos;
 	private GameObject _rocketTarget;
 
 	[SerializeField] private SpriteRenderer _reticleSpriteRenderer;
@@ -48,6 +50,9 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	//MachineGun
 	[SerializeField] private LineRenderer _lineRenderer;
 	[SerializeField] private AudioClip _pistolFireClip;
+	[SerializeField] private AudioClip _rocketFireClip;
+	[SerializeField] private AudioClip _mortarLaunchClip;
+
 	public float _fireRate = .25f;
 	private float _nextFireTime;
 	public ParticleSystem smokeParticles;
@@ -74,6 +79,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 	public void SwitchWeapon (string weaponName)
 	{
+		
 		switch (weaponName) {
 		case "mortar":
 			_reticleSpriteRenderer.sprite = _crosshairMortar;
@@ -101,6 +107,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	{
 		if (GvrViewer.Instance.Triggered) {
 			if (!_mortarPrimed) {
+				_audSource.PlayOneShot (_mortarLaunchClip);
 				GameObject mortarGO = Instantiate (_mortarPrefab, _spawnPos.transform.position, Quaternion.identity) as GameObject;
 				_mortar = mortarGO.GetComponent<Mortar> ();
 
@@ -220,7 +227,8 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	void launchRocket (GameObject target)
 	{
 		GameObject rocket = _rocketPooler.GetPooledObject ();
-		rocket.transform.position = _reticle.transform.position;
+
+		rocket.transform.position = _rocketLaunchPos.transform.position;
 		rocket.GetComponent<Rocket> ().target = target;
 		rocket.SetActive (true);
 	}

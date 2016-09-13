@@ -1,21 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Gvr.Internal;
+using UnityEngine.UI;
 
 
 public class WeaponsManager : Singleton<WeaponsManager>
 {
+	[SerializeField] private AudioSource _audSource;
+	[SerializeField] private AudioClip _switchWeaponClip;
 
+	private Mortar _mortar;
 	[SerializeField] private ObjectPoolerScript _rocketPooler;
 	[SerializeField] private LockOnManager _lockOnManagerLeft;
 	[SerializeField] private LockOnManager _lockOnManagerRight;
 
-	[SerializeField] private AudioSource _audSource;
-
-	private Mortar _mortar;
-
 	[SerializeField] private Camera mainCam;
-
 
 	[SerializeField] private GameObject _mortarPrefab;
 	[SerializeField] private GameObject _spawnPos;
@@ -53,6 +52,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	[SerializeField] private AudioClip _rocketFireClip;
 	[SerializeField] private AudioClip _mortarLaunchClip;
 
+	private bool _isFirstWeaponEquip = true;
 	public float _fireRate = .25f;
 	private float _nextFireTime;
 	public ParticleSystem smokeParticles;
@@ -67,6 +67,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	void Start ()
 	{
 		SwitchWeapon ("machineGun");
+		_isFirstWeaponEquip = false;
 	}
 	
 	// Update is called once per frame
@@ -79,7 +80,10 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 	public void SwitchWeapon (string weaponName)
 	{
-		
+		if (!_isFirstWeaponEquip) {
+			_audSource.PlayOneShot (_switchWeaponClip);
+		}
+
 		switch (weaponName) {
 		case "mortar":
 			_reticleSpriteRenderer.sprite = _crosshairMortar;

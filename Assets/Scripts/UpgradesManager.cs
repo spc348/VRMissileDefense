@@ -9,9 +9,9 @@ public class UpgradesManager : Singleton<UpgradesManager> {
 	[SerializeField] private Button _mortarButton;
 	[SerializeField] private Button _mortarUnlockButton;
 	[SerializeField] private Button _teslaButton;
+	[SerializeField] private Button _teslaUnlockButton;
 	[SerializeField] private Button _rocketButton;
-
-
+	[SerializeField] private Button _rocketUnlockButton;
 
 	private bool _isShowing;
 
@@ -33,7 +33,17 @@ public class UpgradesManager : Singleton<UpgradesManager> {
 		_mortarUnlockButton.gameObject.SetActive (false);
 	}
 
+	public void unlockTesla() {
+		_audSource.PlayOneShot (_chaChingClip);
+		_teslaButton.interactable = true;
+		_teslaUnlockButton.gameObject.SetActive (false);
+	}
 
-
+	public void unlockRocket() {
+		_audSource.PlayOneShot (_chaChingClip);
+		_rocketButton.interactable = true;
+		_rocketUnlockButton.gameObject.SetActive (false);
+	}
+		
 
 }

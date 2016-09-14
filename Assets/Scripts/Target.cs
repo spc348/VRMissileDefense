@@ -5,7 +5,8 @@ using System.Collections;
 public class Target : MonoBehaviour
 {
 
-	[SerializeField] private Renderer _renderer;
+	[SerializeField] private Renderer _renderer1;
+	[SerializeField] private Renderer _renderer2;
 
 	[SerializeField] private Slider _healthSlider;
 
@@ -21,7 +22,7 @@ public class Target : MonoBehaviour
 
 	void Start ()
 	{
-		_origColor = _renderer.material.color;
+		_origColor = _renderer1.material.color;
 		updateHealthBar();
 	}
 
@@ -44,16 +45,24 @@ public class Target : MonoBehaviour
 
 	IEnumerator showDamageColor ()
 	{
-		_renderer.material.color = _hurtColor;
+		_renderer1.material.color = _hurtColor;		
+		_renderer2.material.color = _hurtColor;
+
 		yield return new WaitForSeconds (.1f);
-		_renderer.material.color = _origColor;
+		_renderer1.material.color = _origColor;
+		_renderer2.material.color = _origColor;
+
 	}
 
 	IEnumerator showHealColor ()
 	{
-		_renderer.material.color = Color.green;
+		_renderer1.material.color = Color.green;
+		_renderer2.material.color = Color.green;
+
 		yield return new WaitForSeconds (.1f);
-		_renderer.material.color = _origColor;
+		_renderer1.material.color = _origColor;
+		_renderer2.material.color = _origColor;
+
 	}
 
 	void die ()

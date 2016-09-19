@@ -16,6 +16,7 @@ public class Rocket : MonoBehaviour
 	[SerializeField] private float _rotateSpeed = 1000f;
 	private float _origParticleEmissionRate;
 	private bool _isAlive = true;
+	private float _countdownTimer = 5f;
 	// Use this for initialization
 
 	void Start ()
@@ -25,10 +26,11 @@ public class Rocket : MonoBehaviour
 
 	void OnEnable ()
 	{
+		_countdownTimer = 5f;
 		_renderer.enabled = true;
 		_collider.enabled = true;
 		_rb.isKinematic = false;
-		_rocketTrailParticles.EnableEmission(true);
+		_rocketTrailParticles.EnableEmission (true);
 		_isAlive = true;
 		_audSource.PlayOneShot (_launchSFX);
 	}
@@ -36,6 +38,12 @@ public class Rocket : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
+		if (_isAlive) {
+			_countdownTimer -= Time.deltaTime;
+			if (_countdownTimer <= 0) {
+				explode ();
+			}
+		}
 		move ();
 	}
 

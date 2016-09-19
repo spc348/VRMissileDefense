@@ -28,7 +28,7 @@ public class KamikazeEnemy : Enemy {
 	{
 		if (coll.gameObject.CompareTag ("Target")) {
 			StartCoroutine (dieCoroutine (false));
-			coll.gameObject.GetComponent<Target> ().takeDamage (1);
+			coll.gameObject.GetComponent<Target> ().takeDamage (5);
 		}
 
 	}

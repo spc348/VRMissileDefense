@@ -9,7 +9,7 @@ public abstract class Enemy : Entity
 	[SerializeField] protected Collider _collider;
 	[SerializeField] protected Rigidbody _rb;
 	[SerializeField] protected Renderer _renderer;
-
+	[SerializeField] protected Light _light;
 	public GameObject target {
 		get { return _target; }
 		set {
@@ -203,6 +203,7 @@ public abstract class Enemy : Entity
 //		_healthSliderCanvasGroup.alpha = 0;
 
 		GameObject explosion = Instantiate (_deathExplosionPrefab, transform.position, Quaternion.identity) as GameObject;
+
 		explosion.name = "Explosion" + gameObject.name;
 		if (killedByPlayer) {
 			float r = Random.value;
@@ -215,13 +216,11 @@ public abstract class Enemy : Entity
 			//remove remaing health from bar
 			OnTakeDamage (_health);
 		}
+
+//		yield return null;
+
+		gameObject.SetActive (false);	
 		yield return null;
-//		audSource.PlayOneShot (deathBoomClip);
-//		yield return new WaitForSeconds (deathBoomClip.length);
-		gameObject.SetActive (false);
-//		enemyManager.enemies.Remove (this);
-//		GameEventManager.TriggerEvent ("CheckEnemyList");
-	
 	}
 
 	protected void tryGetTarget ()

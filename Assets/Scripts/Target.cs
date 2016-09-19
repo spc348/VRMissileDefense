@@ -23,6 +23,7 @@ public class Target : MonoBehaviour
 	void Start ()
 	{
 		_origColor = _renderer1.material.color;
+		_healthSlider.maxValue = _maxHealth;
 		updateHealthBar();
 	}
 
@@ -51,7 +52,6 @@ public class Target : MonoBehaviour
 		yield return new WaitForSeconds (.1f);
 		_renderer1.material.color = _origColor;
 		_renderer2.material.color = _origColor;
-
 	}
 
 	IEnumerator showHealColor ()
@@ -70,6 +70,5 @@ public class Target : MonoBehaviour
 		GameObject explosion = Instantiate (_deathParticlesPrefab, transform.position, Quaternion.identity) as GameObject;
 		OnGameOver();
 		Destroy (gameObject);
-
 	}
 }

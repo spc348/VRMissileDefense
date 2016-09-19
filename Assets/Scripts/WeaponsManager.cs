@@ -48,7 +48,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 	//MachineGun
 	[SerializeField] private LineRenderer _lineRenderer;
-	[SerializeField] private AudioClip _pistolFireClip;
+	[SerializeField] private AudioClip _machineGunFireClip;
 	[SerializeField] private AudioClip _rocketFireClip;
 	[SerializeField] private AudioClip _mortarLaunchClip;
 
@@ -133,7 +133,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 		if (Input.GetButton ("Fire1") && Time.time > _nextFireTime) {
 			_nextFireTime = Time.time + _fireRate;
-			_audSource.PlayOneShot (_pistolFireClip);
+			_audSource.PlayOneShot (_machineGunFireClip);
 
 			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
 				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();

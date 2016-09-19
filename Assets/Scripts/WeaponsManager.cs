@@ -61,6 +61,13 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	private int numTeslaPoint = 49;
 	public bool isLockedOn = false;
 
+	public int mortarAmmo;
+	public int TeslaAmmo;
+	public int rocketAmmo;
+	private int maxMortarAmmo = 5;
+	private int maxTeslaAmmo = 50;
+	private int maxRocketAmmo = 2;
+
 	public int lootCount = 0;
 
 	// Use this for initialization

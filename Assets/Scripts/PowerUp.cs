@@ -11,7 +11,7 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 	[SerializeField] private Light _light;
 	[SerializeField] private GameObject _powerUpParticlesPrefab;
 
-	[SerializeField] private float _minLightSize = 3f;
+	[SerializeField] private float _minLightSize = 10f;
 	[SerializeField] private float _lightSizeMultiplier = 5f;
 
 	public enum PowerUpType
@@ -24,7 +24,7 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 
 	public PowerUpType pType;
 
-	void Start ()
+	void OnEnable ()
 	{
 		pType = (PowerUpType)(Random.Range (0, 3));
 	}
@@ -43,7 +43,7 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 	public virtual void OnPointerDown (PointerEventData eventData)
 	{
 
-		GameObject particles = Instantiate (_powerUpParticlesPrefab, transform.position, Quaternion.identity) as GameObject;
+		GameObject particles = Instantiate (_powerUpParticlesPrefab, transform.position, Quaternion.Euler (new Vector3 (-90, 0, 0))) as GameObject;
 		switch (pType) {
 		case PowerUpType.MORTAR:
 			UpgradesManager.Instance.unlockMortar ();
@@ -55,8 +55,8 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 			UpgradesManager.Instance.unlockRocket ();
 			break;
 		}
-		Destroy (gameObject);
 
+		WeaponsManager.Instance.delayedTurnOnShoot ();
+		gameObject.SetActive (false);
 	}
-
 }

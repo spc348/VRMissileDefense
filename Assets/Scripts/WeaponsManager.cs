@@ -279,4 +279,15 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		_lockOnManagerLeft.endLockOnProcess ();
 		_lockOnManagerRight.endLockOnProcess ();
 	}
+
+
+	public void delayedTurnOnShoot() {
+		StartCoroutine (delayedTurnOnShootCoroutine ());
+	}
+	IEnumerator delayedTurnOnShootCoroutine ()
+	{
+		yield return new WaitForSeconds (.1f);
+		WeaponsManager.Instance.setReticleToCrosshair ();
+		WeaponsManager.Instance.canShoot = true;
+	}
 }

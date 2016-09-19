@@ -4,6 +4,7 @@ using System.Collections;
 
 public class UpgradesManager : Singleton<UpgradesManager> {
 
+	[SerializeField] private ObjectPoolerScript _powerUpPooler;
 	[SerializeField] private AudioSource _audSource;
 	[SerializeField] private AudioClip _chaChingClip;
 	[SerializeField] private Button _mortarButton;
@@ -44,6 +45,11 @@ public class UpgradesManager : Singleton<UpgradesManager> {
 		_rocketButton.interactable = true;
 		_rocketUnlockButton.gameObject.SetActive (false);
 	}
-		
+
+	public void dropPowerUp(Vector3 pos) {
+		GameObject powerUp = _powerUpPooler.GetPooledObject ();
+		powerUp.transform.position = pos;
+		powerUp.SetActive (true);
+	}
 
 }

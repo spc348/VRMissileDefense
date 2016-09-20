@@ -234,6 +234,6 @@ public abstract class Enemy : Entity
 
 	protected void releaseReward ()
 	{
-		GameObject lootGO = Instantiate (_lootPrefab, transform.transform.position, Quaternion.identity) as GameObject;	
+		UpgradesManager.Instance.dropPowerUp (transform.position);
 	}
 }

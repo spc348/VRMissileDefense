@@ -10,6 +10,8 @@ public class AirShooterEnemy : Enemy
 	private float _nextFireTime;
 	public float _fireRate = .25f;
 
+	[SerializeField] private GameObject[] _tenactles;
+
 	// Use this for initialization
 	void Start ()
 	{
@@ -53,6 +55,7 @@ public class AirShooterEnemy : Enemy
 				bullet.GetComponent<Rigidbody> ().AddForce (dir * 1, ForceMode.Impulse); 
 			}	
 		}
-
 	}
+
+
 }

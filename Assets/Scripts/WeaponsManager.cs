@@ -16,6 +16,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 	[SerializeField] private Camera mainCam;
 
+	[SerializeField] private ParticleSystem _tracerParticles;
 	[SerializeField] private GameObject _mortarPrefab;
 	[SerializeField] private GameObject _spawnPos;
 	[SerializeField] private GameObject _reticle;
@@ -53,7 +54,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	[SerializeField] private AudioClip _mortarLaunchClip;
 
 	private bool _isFirstWeaponEquip = true;
-	public float _fireRate = .25f;
+	public float _fireRate = .1f;
 	private float _nextFireTime;
 	public ParticleSystem smokeParticles;
 	public GameObject hitParticles;
@@ -75,6 +76,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	{
 		SwitchWeapon ("machineGun");
 		_isFirstWeaponEquip = false;
+		_tracerParticles.EnableEmission (false);
 	}
 	
 	// Update is called once per frame
@@ -138,21 +140,27 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		RaycastHit hit;
 		Vector3 rayOrigin = _reticle.transform.position;
 
-		if (Input.GetButton ("Fire1") && Time.time > _nextFireTime) {
-			_nextFireTime = Time.time + _fireRate;
-			_audSource.PlayOneShot (_machineGunFireClip);
+		if (Input.GetButton ("Fire1")) {
+			_tracerParticles.EnableEmission (true);
 
-			if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
-				Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
-				if (enemy != null) {
-					enemy.takeDamage (UpgradesManager.Instance.machineGunStrength);
+			if (Time.time > _nextFireTime) {
+				_nextFireTime = Time.time + _fireRate;
+				_audSource.PlayOneShot (_machineGunFireClip);
 
-					if (hit.rigidbody != null) {
-						hit.rigidbody.AddForce (-hit.normal * 1f, ForceMode.Impulse);
+				if (Physics.SphereCast (rayOrigin, 2, mainCam.transform.forward, out hit, range)) {
+					Enemy enemy = hit.collider.gameObject.GetComponent<Enemy> ();
+					if (enemy != null) {
+						enemy.takeDamage (UpgradesManager.Instance.machineGunStrength);
+
+						if (hit.rigidbody != null) {
+							hit.rigidbody.AddForce (-hit.normal * 1f, ForceMode.Impulse);
+						}
+						Instantiate (hitParticles, hit.point, Quaternion.identity);
 					}
-					Instantiate (hitParticles, hit.point, Quaternion.identity);
 				}
 			}
+		} else {
+			_tracerParticles.EnableEmission (false);
 		}
 	}
 
@@ -281,9 +289,11 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	}
 
 
-	public void delayedTurnOnShoot() {
+	public void delayedTurnOnShoot ()
+	{
 		StartCoroutine (delayedTurnOnShootCoroutine ());
 	}
+
 	IEnumerator delayedTurnOnShootCoroutine ()
 	{
 		yield return new WaitForSeconds (.1f);

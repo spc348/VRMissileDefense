@@ -63,17 +63,25 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	public bool isLockedOn = false;
 
 	public int mortarAmmo;
-	public int TeslaAmmo;
+	public int teslaAmmo;
 	public int rocketAmmo;
 	private int maxMortarAmmo = 5;
 	private int maxTeslaAmmo = 50;
 	private int maxRocketAmmo = 2;
+
+	[SerializeField] private Text _mortarAmmoText;
+	[SerializeField] private Text _teslaAmmoText;
+	[SerializeField] private Text _rocketAmmoText;
+
 
 	public int lootCount = 0;
 
 	// Use this for initialization
 	void Start ()
 	{
+		setMortarAmmoText ();
+		setTeslaAmmoText ();
+		setRocketAmmoText ();
 		SwitchWeapon ("machineGun");
 		_isFirstWeaponEquip = false;
 		_tracerParticles.EnableEmission (false);
@@ -90,6 +98,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	public void SwitchWeapon (string weaponName)
 	{
 		if (!_isFirstWeaponEquip) {
+			print ("playing one shot");
 			_audSource.PlayOneShot (_switchWeaponClip);
 		}
 
@@ -103,6 +112,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			shootWeapon = ShootMachineGun;
 			break;
 		case "tesla":
+			print ("switching tesla: ");
 			_reticleSpriteRenderer.sprite = _crosshairTesla;
 			shootWeapon = ShootTesla;
 			break;
@@ -128,6 +138,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 				_mortar.rb.AddForce (shootDir * 50f, ForceMode.Impulse);
 				_mortarPrimed = true;
 			} else {
+				decreaseMortarAmmo ();
 				_mortar.explode ();
 				_mortarPrimed = false;
 			}
@@ -180,7 +191,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 			float step = distance / numTeslaPoint;
 			_lineRenderer.SetPosition (0, _reticle.transform.position - new Vector3 (0, 1));
 			_lineRenderer.SetPosition (1, _laserEnd.transform.position);
-
+			decreaseTeslaAmmo ();
 //			_lineRenderer.SetPosition (numTeslaPoint, _laserEnd.transform.position);
 //			for (int i = 1; i < numTeslaPoint; i++) {
 //				float error1 = Random.Range (-.2f, .2f);
@@ -237,6 +248,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		} else {
 			if (isLockedOn) {
 				launchRocket (_rocketTarget);
+				decreaseRocketAmmo ();
 				isLockedOn = false;
 			}
 			cancelLockOn ();
@@ -300,4 +312,74 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		WeaponsManager.Instance.setReticleToCrosshair ();
 		WeaponsManager.Instance.canShoot = true;
 	}
+
+	public void increaseMortarAmmo ()
+	{
+		int ammoToAdd = 5;
+		if (mortarAmmo < maxMortarAmmo) {
+			mortarAmmo += ammoToAdd;
+		} else {
+			mortarAmmo = maxMortarAmmo;
+		}
+		setMortarAmmoText ();
+	}
+
+	public void increaseTeslaAmmo ()
+	{
+		int ammoToAdd = 5;
+		if (teslaAmmo < maxTeslaAmmo) {
+			teslaAmmo += ammoToAdd;
+		} else {
+			teslaAmmo = maxTeslaAmmo;
+		}
+		setTeslaAmmoText ();
+	}
+
+	public void increaseRocketAmmo ()
+	{
+		int ammoToAdd = 1;
+		if (rocketAmmo < maxRocketAmmo) {
+			rocketAmmo += ammoToAdd;
+		} else {
+			rocketAmmo = maxRocketAmmo;
+		}
+	}
+
+	public void setMortarAmmoText ()
+	{
+		string ammoString = mortarAmmo + "/" + maxMortarAmmo;
+		_mortarAmmoText.text = ammoString;	
+	}
+
+	public void setTeslaAmmoText ()
+	{
+		string ammoString = teslaAmmo + "/" + maxTeslaAmmo;
+		_teslaAmmoText.text = ammoString;
+	}
+
+	public void setRocketAmmoText ()
+	{
+		string ammoString = rocketAmmo + "/" + maxRocketAmmo;
+		_rocketAmmoText.text = ammoString;
+	}
+
+
+	void decreaseMortarAmmo ()
+	{
+		mortarAmmo -= 1;
+		setMortarAmmoText ();
+	}
+
+	void decreaseTeslaAmmo ()
+	{
+		teslaAmmo -= 1;
+		setTeslaAmmoText ();
+	}
+
+	void decreaseRocketAmmo ()
+	{
+		rocketAmmo -= 1;
+		setRocketAmmoText ();
+	}
+
 }

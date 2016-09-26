@@ -46,13 +46,19 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 		GameObject particles = Instantiate (_powerUpParticlesPrefab, transform.position, Quaternion.Euler (new Vector3 (-90, 0, 0))) as GameObject;
 		switch (pType) {
 		case PowerUpType.MORTAR:
-			UpgradesManager.Instance.unlockMortar ();
+			print ("increasing mortar");
+			WeaponsManager.Instance.increaseMortarAmmo ();
+//			UpgradesManager.Instance.unlockMortar ();
 			break;
 		case PowerUpType.TESLA:
-			UpgradesManager.Instance.unlockTesla ();
+			print ("increasing teslsa");
+			WeaponsManager.Instance.increaseTeslaAmmo ();
+//			UpgradesManager.Instance.unlockTesla ();
 			break;
 		case PowerUpType.ROCKET:
-			UpgradesManager.Instance.unlockRocket ();
+			print ("increaseing rocket");
+			WeaponsManager.Instance.increaseRocketAmmo ();
+//			UpgradesManager.Instance.unlockRocket ();
 			break;
 		}
 

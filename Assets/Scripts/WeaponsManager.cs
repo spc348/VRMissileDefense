@@ -9,6 +9,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 	[SerializeField] private AudioSource _audSource;
 	[SerializeField] private AudioClip _switchWeaponClip;
 
+
 	private Mortar _mortar;
 	[SerializeField] private ObjectPoolerScript _rocketPooler;
 	[SerializeField] private LockOnManager _lockOnManagerLeft;
@@ -315,6 +316,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 
 	public void increaseMortarAmmo ()
 	{
+		
 		int ammoToAdd = 5;
 		if (mortarAmmo < maxMortarAmmo) {
 			mortarAmmo += ammoToAdd;

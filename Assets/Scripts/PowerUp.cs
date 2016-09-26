@@ -8,9 +8,10 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 
 
 
+	[SerializeField] private AudioSource _audSource;
+	[SerializeField] private AudioClip _chaChingClip;
 	[SerializeField] private Light _light;
 	[SerializeField] private GameObject _powerUpParticlesPrefab;
-
 	[SerializeField] private float _minLightSize = 10f;
 	[SerializeField] private float _lightSizeMultiplier = 5f;
 
@@ -43,6 +44,7 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 	public virtual void OnPointerDown (PointerEventData eventData)
 	{
 
+		_audSource.PlayOneShot (_chaChingClip);
 		GameObject particles = Instantiate (_powerUpParticlesPrefab, transform.position, Quaternion.Euler (new Vector3 (-90, 0, 0))) as GameObject;
 		switch (pType) {
 		case PowerUpType.MORTAR:
@@ -64,5 +66,9 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 
 		WeaponsManager.Instance.delayedTurnOnShoot ();
 		gameObject.SetActive (false);
+	}
+
+	IEnumerator delayedDeactivate() {
+//		yield return new WaitForSeconds(
 	}
 }

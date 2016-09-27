@@ -345,6 +345,7 @@ public class WeaponsManager : Singleton<WeaponsManager>
 		} else {
 			rocketAmmo = maxRocketAmmo;
 		}
+		setRocketAmmoText ();
 	}
 
 	public void setMortarAmmoText ()

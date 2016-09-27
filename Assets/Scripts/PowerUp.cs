@@ -44,7 +44,7 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 	public virtual void OnPointerDown (PointerEventData eventData)
 	{
 
-		_audSource.PlayOneShot (_chaChingClip);
+		UpgradesManager.Instance.playChaChing ();
 		GameObject particles = Instantiate (_powerUpParticlesPrefab, transform.position, Quaternion.Euler (new Vector3 (-90, 0, 0))) as GameObject;
 		switch (pType) {
 		case PowerUpType.MORTAR:
@@ -68,7 +68,9 @@ public class PowerUp : InteractableObject, IPointerDownHandler
 		gameObject.SetActive (false);
 	}
 
-	IEnumerator delayedDeactivate() {
+	IEnumerator delayedDeactivate ()
+	{
+		yield return null;
 //		yield return new WaitForSeconds(
 	}
 }

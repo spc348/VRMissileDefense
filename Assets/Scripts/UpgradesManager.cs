@@ -52,4 +52,7 @@ public class UpgradesManager : Singleton<UpgradesManager> {
 		powerUp.SetActive (true);
 	}
 
+	public void playChaChing() {
+		_audSource.PlayOneShot (_chaChingClip);
+	}
 }
